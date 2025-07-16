@@ -98,9 +98,21 @@ services:
         condition: service_healthy
     networks:
       - backend
-    labels:
-      - "app=devlore"
-      - "service=backend"
+      
+  frontend:
+    container_name: react-app
+    build:
+      context: ./devlore-client 
+      dockerfile: Dockerfile
+    ports:
+      - "3000:5173"
+    environment:
+      VITE_API_URL: "http://devloreapi:8080"
+    depends_on:
+      - devloreapi
+    networks:
+      - backend
+
 
 volumes:
   devlore-data:
