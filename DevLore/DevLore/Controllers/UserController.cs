@@ -7,7 +7,6 @@ using DevLore.EntitiesLibrary.Entities;
 
 namespace DevLore.Controllers
 {
-
     [Route("api/user")]
     [ApiController]
     public class UserController(UserService dataEntityService) : Controller
