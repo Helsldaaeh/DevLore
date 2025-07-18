@@ -26,9 +26,9 @@ const DevLore = () => {
     Content: ''
   });
   const [userFormData, setUserFormData] = useState<Omit<UserDTO, 'id' | 'createdAt' | 'updatedAt'>>({ 
-    Username: '', //
-    Hash_password: '', //
-    Profile: '', //
+    Username: '',
+    Hash_password: '',
+    Profile: '',
   });
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -58,12 +58,15 @@ const DevLore = () => {
   };
 
   useEffect(() => {
-    loadPosts();
     loadUsers();
+    loadPosts();
   }, []);
 
   const handlePostContentInputChange = (e: React.ChangeEvent<HTMLInputElement>, ) => {
     setPostFormData({ Content: e.target.value});
+  };
+  const handlePostUserIdInputChange = (e: React.ChangeEvent<HTMLInputElement>, ) => {
+    setPostFormData({ UserId: Number(e.target.value)});
   };
   const handleUserUsernameInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserFormData({ Username: e.target.value});
@@ -177,7 +180,7 @@ const DevLore = () => {
   if (loading) return <div className={styles.loading}>Loading posts & users...</div>;
   if (error) return <div className={styles.error}>Error: {error}</div>;
 
-  return (<>HI</>
+  return (<div></div>
   );
 };
 

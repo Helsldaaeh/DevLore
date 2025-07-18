@@ -17,11 +17,11 @@ export const fetchUsers = async (): Promise<UserDTO[]> => {
   return response.json();
 };
 
-export const createOrUpdateUsers = async (posts: UserDTO[]): Promise<boolean> => {
+export const createOrUpdateUsers = async (users: UserDTO[]): Promise<boolean> => {
   const response = await fetch('/api/user', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(posts)
+    body: JSON.stringify(users)
   });
 
   if (!response.ok) {

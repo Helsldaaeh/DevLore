@@ -1,14 +1,14 @@
 // src/api/topic.ts
 export interface PostDTO {
   id?: number | null;
-  UserId?: number | null;
+  UserId: number | null;
   Content?: string | null;
   createdAt?: string | null;
   updatedAt?: string | null;
 }
 
 export const fetchPosts = async (): Promise<PostDTO[]> => {
-  const response = await fetch(`/api/post`, { method: "GET" });
+  const response = await fetch(`/api/post/UserId`, { method: "GET" });
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.message || 'Failed to fetch posts');
