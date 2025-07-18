@@ -1,85 +1,160 @@
 // src/components/News.tsx
 import { useState, useEffect } from 'react';
 import { 
-  type TopicDTO, 
-  fetchTopics, 
-  createOrUpdateTopics, 
-  deleteTopics 
-} from '../api/topic_service';
+  type PostDTO, 
+  fetchPosts, 
+  createOrUpdatePosts, 
+  deletePosts 
+} from '../api/post_service';
+import { 
+  type UserDTO, 
+  fetchUsers, 
+  createOrUpdateUsers, 
+  deleteUsers 
+} from '../api/user_service';
 import styles from '../styles/DevLore.module.css';
 
 
 const DevLore = () => {
-  const [topics, setTopics] = useState<TopicDTO[]>([]);
+  const [posts, setPosts] = useState<PostDTO[]>([]);
+  const [users, setUsers] = useState<UserDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [formData, setFormData] = useState<Omit<TopicDTO, 'id' | 'createdAt' | 'updatedAt'>>({ 
-    title: '' 
+  const [postFormData, setPostFormData] = useState<Omit<PostDTO, 'id' | 'createdAt' | 'updatedAt'>>({
+    UserId: Number(),
+    Content: ''
+  });
+  const [userFormData, setUserFormData] = useState<Omit<UserDTO, 'id' | 'createdAt' | 'updatedAt'>>({ 
+    Username: '', //
+    Hash_password: '', //
+    Profile: '', //
   });
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  const loadTopics = async () => {
+  const loadPosts = async () => {
     try {
       setLoading(true);
-      const data = await fetchTopics();
-      setTopics(data);
+      const data = await fetchPosts();
+      setPosts(data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load topics');
+      setError(err instanceof Error ? err.message : 'Failed to load posts');
+    } finally {
+      setLoading(false);
+    }
+  };
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchUsers();
+      setUsers(data);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load users');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadTopics();
+    loadPosts();
+    loadUsers();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ title: e.target.value });
+  const handlePostContentInputChange = (e: React.ChangeEvent<HTMLInputElement>, ) => {
+    setPostFormData({ Content: e.target.value});
+  };
+  const handleUserUsernameInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserFormData({ Username: e.target.value});
+  };
+  const handleUserPasswordInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserFormData({Hash_password: e.target.value});
+  };
+  const handleUserProfileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserFormData({ Profile: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const topicToSave: TopicDTO = {
+    const PostToSave: PostDTO = {
       id: editingId || undefined,
-      title: formData.title
+      UserId: postFormData.UserId,
+      Content: postFormData.Content
+    };
+    const UserToSave: UserDTO = {
+      id: editingId || undefined,
+      Username: userFormData.Username,
+      Hash_password: userFormData.Hash_password,
+      Profile: userFormData.Profile
     };
 
     try {
-      await createOrUpdateTopics([topicToSave]);
+      await createOrUpdateUsers([PostToSave]);
+      await createOrUpdatePosts([PostToSave]);
       resetForm();
-      await loadTopics();
+      await loadUsers();
+      await loadPosts();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Saving failed');
     }
   };
 
-  const handleDelete = async (ids: number[]) => {
+  const handleDeleteUser = async (ids: number[]) => {
     try {
-      await deleteTopics(ids);
+      await deleteUsers(ids);
       setSelectedIds(selectedIds.filter(id => !ids.includes(id)));
-      await loadTopics();
+      await loadUsers();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Deletion failed');
+    }
+  };
+
+  const handleDeletePost = async (ids: number[]) => {
+    try {
+      await deletePosts(ids);
+      setSelectedIds(selectedIds.filter(id => !ids.includes(id)));
+      await loadPosts();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Deletion failed');
     }
   };
 
   const resetForm = () => {
-    setFormData({ title: '' });
+    setUserFormData({ Username: userFormData.Username,
+      Hash_password: userFormData.Hash_password,
+      Profile: '' });
+    setPostFormData({Content: ''});
     setEditingId(null);
   };
 
-  const setupEdit = (topic: TopicDTO) => {
-    if (topic.id === undefined || topic.id === null) return;
-    
-    setFormData({ title: topic.title || '' });
-    setEditingId(topic.id);
+  const setupPostEdit = (post: PostDTO) => {
+    if (post.id === undefined || post.id === null) return;
+    setPostFormData({
+      Content: post.Content || ''
+     });
+    setEditingId(post.id);
+  };
+  
+  const setupUserEdit = (user: UserDTO) => {
+    if (user.id === undefined || user.id === null) return;
+    setUserFormData({
+      Username: user.Username,
+      Hash_password: user.Hash_password,
+      Profile: user.Profile || '' });
+    setEditingId(user.id);
   };
 
-  const toggleSelection = (id: number) => {
+  const usersToggleSelection = (id: number) => {
+    setSelectedIds(prev => 
+      prev.includes(id) 
+        ? prev.filter(item => item !== id) 
+        : [...prev, id]
+    );
+  };
+
+  const postsToggleSelection = (id: number) => {
     setSelectedIds(prev => 
       prev.includes(id) 
         ? prev.filter(item => item !== id) 
@@ -99,107 +174,10 @@ const DevLore = () => {
     });
   };
 
-  if (loading) return <div className={styles.loading}>Loading topics...</div>;
+  if (loading) return <div className={styles.loading}>Loading posts & users...</div>;
   if (error) return <div className={styles.error}>Error: {error}</div>;
 
-  return (
-    <div className={styles.container}>
-      <h1 className={styles.header}>Topics Management</h1>
-
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.formGroup}>
-          <label className={styles.formLabel}>Title</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title || ''}
-            onChange={handleInputChange}
-            className={styles.formInput}
-            required
-            placeholder="Enter topic title"
-          />
-        </div>
-        
-        <div className={styles.buttonGroup}>
-          <button 
-            type="submit" 
-            className={`${styles.btn} ${styles.btnPrimary}`}
-          >
-            {editingId ? 'Update Topic' : 'Add Topic'}
-          </button>
-          {editingId && (
-            <button 
-              type="button" 
-              className={`${styles.btn} ${styles.btnSecondary}`}
-              onClick={resetForm}
-            >
-              Cancel
-            </button>
-          )}
-        </div>
-      </form>
-
-      <div className={styles.bulkActions}>
-        <button
-          className={`${styles.btn} ${styles.btnDanger}`}
-          disabled={selectedIds.length === 0}
-          onClick={() => handleDelete(selectedIds)}
-        >
-          Delete Selected ({selectedIds.length})
-        </button>
-      </div>
-
-      <table className={styles.table}>
-        <thead>
-          <tr className={styles.tableHeader}>
-            <th></th>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {topics.map(topic => (
-            <tr key={topic.id || 'new'} className={styles.tableRow}>
-              <td className={styles.tableCell}>
-                {topic.id && (
-                  <input
-                    type="checkbox"
-                    className={styles.checkbox}
-                    checked={selectedIds.includes(topic.id)}
-                    onChange={() => topic.id && toggleSelection(topic.id)}
-                  />
-                )}
-              </td>
-              <td className={styles.tableCell}>{topic.id || 'N/A'}</td>
-              <td className={styles.tableCell}>{topic.title || 'Untitled'}</td>
-              <td className={styles.tableCell}>{formatDate(topic.createdAt)}</td>
-              <td className={styles.tableCell}>{formatDate(topic.updatedAt)}</td>
-              <td className={`${styles.tableCell} ${styles.actionsCell}`}>
-                {topic.id && (
-                  <>
-                    <button
-                      className={`${styles.btn} ${styles.btnSm} ${styles.btnWarning}`}
-                      onClick={() => setupEdit(topic)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className={`${styles.btn} ${styles.btnSm} ${styles.btnDanger}`}
-                      onClick={() => topic.id && handleDelete([topic.id])}
-                    >
-                      Delete
-                    </button>
-                  </>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+  return (<>HI</>
   );
 };
 
