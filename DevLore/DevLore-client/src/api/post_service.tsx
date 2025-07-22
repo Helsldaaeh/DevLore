@@ -1,4 +1,4 @@
-// src/api/topic.ts
+// src/api/DevLore.ts
 export interface PostDTO {
   id?: number | null;
   UserId?: number | null;
