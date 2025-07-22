@@ -15,9 +15,9 @@ namespace DevLore.EntitiesLibrary.Transfer
             return new User
             {
                 Id = common.Id,
-                Hashed_Password = common.Hashed_Password,
                 Username = common.Username,
-                Profile = common.Profile,
+                Hashed_Password = common.Hashed_Password,
+                Profile = common.Profile
             };
         }
 
@@ -26,12 +26,12 @@ namespace DevLore.EntitiesLibrary.Transfer
         {
             return new UserDTO
             {
+                CreatedAt = common.CreatedAt,
+                UpdatedAt = common.UpdatedAt,
                 Id = common.Id,
                 Username = common.Username,
                 Hashed_Password = common.Hashed_Password,
-                Profile = common.Profile,
-                CreatedAt = common.CreatedAt,
-                UpdatedAt = common.UpdatedAt
+                Profile = common.Profile
             };
         }
     }

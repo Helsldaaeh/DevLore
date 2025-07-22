@@ -23,11 +23,11 @@ namespace DevLore.EntitiesLibrary.Transfer
         {
             return new PostDTO
             {
+                CreatedAt = common.CreatedAt,
+                UpdatedAt = common.UpdatedAt,
                 Id = common.Id,
                 UserId = common.UserId,
-                Content = common.Content,
-                CreatedAt = common.CreatedAt,
-                UpdatedAt = common.UpdatedAt
+                Content = common.Content
             };
         }
     }

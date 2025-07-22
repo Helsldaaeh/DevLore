@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using DevLore.EntitiesLibrary.Data;
 using DevLore.EntitiesLibrary.Entities;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DevLore.EntitiesLibrary.Entities.Common
 {
@@ -46,10 +47,9 @@ namespace DevLore.EntitiesLibrary.Entities.Common
         #endregion
 
         public string Username { get; set; }
-        public string Hash_password { get; set; }
+        public string Hashed_password { get; set; }
         public string Profile { get; set; } = "";
         public List<Post>? Posts { get; set; } = [];
-
         //User(string Username, string password)
         //{
         //    Hash_password = BCrypt.Net.BCrypt.HashPassword(password);
