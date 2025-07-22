@@ -47,7 +47,7 @@ namespace DevLore.EntitiesLibrary.Entities.Common
         #endregion
 
         public string Username { get; set; }
-        public string Hashed_password { get; set; }
+        public string Hashed_Password { get; set; }
         public string Profile { get; set; } = "";
         public List<Post>? Posts { get; set; } = [];
         //User(string Username, string password)
