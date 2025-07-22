@@ -1,4 +1,4 @@
-// src/api/topic.ts
+// src/api/DevLore.ts
 export interface UserDTO {
   id?: number | null;
   Username?: string | null;

@@ -4,6 +4,7 @@
     {
         public int? Id { get; init; }
         public string Profile { get; set; } = "";
+        public string Hashed_password { get; set; }
         public string Username { get; set; }
     }
 }

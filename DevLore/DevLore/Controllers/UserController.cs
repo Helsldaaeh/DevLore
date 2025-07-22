@@ -25,7 +25,7 @@ namespace DevLore.Controllers
         /// <param name="ids">Список идентификаторов.</param>
         /// <returns>Результат операции со списком постов.</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> Get([FromQuery] string userId, [FromQuery] List<int>? ids)
+        public async Task<ActionResult<IEnumerable<UserDTO>>> Get([FromQuery] List<int>? ids)
         {
             var users = (await DataEntityService.Get(((DataContext)DataEntityService.DataContext).Users, ids)).Select(x => x.ToDTO()).ToList();
             return Ok(users);

@@ -26,7 +26,7 @@ namespace DevLore.EntitiesLibrary.Transfer
             return new UserDTO
             {
                 Id = common.Id,
-                Username = common.Hash_password,
+                Username = common.Username,
                 Profile = common.Profile,
                 CreatedAt = common.CreatedAt,
                 UpdatedAt = common.UpdatedAt
