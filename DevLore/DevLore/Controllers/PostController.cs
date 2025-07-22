@@ -37,7 +37,7 @@ namespace DevLore.Controllers
         /// <param name="entities">Список постов.</param>
         /// <returns>Результат операции.</returns>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] List<PostDTO> entities)
+        public async Task<IActionResult> Post([FromBody] List<RequestPostDTO> entities)
         {
             var status = await DataEntityService.Set(((DataContext)DataEntityService.DataContext).Posts, entities.Select(x => x.ToEntity()).ToList());
 
