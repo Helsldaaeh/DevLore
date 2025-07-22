@@ -20,10 +20,6 @@ var application = builder.Build();
 application.UseMiddleware<ExceptionHandler>();
 application.UseSwagger();
 application.UseSwaggerUI();
-application.UseCors(policy => policy
-.AllowAnyOrigin()
-.AllowAnyMethod()
-.AllowAnyHeader());
 application.MapControllers();
 application.MapHealthChecks("/health");
 application.UseCors();

@@ -25,7 +25,7 @@ namespace DevLore.Controllers
         /// <param name="ids">Список идентификаторов.</param>
         /// <returns>Результат операции со списком постов.</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PostDTO>>> Get([FromQuery] string userId, [FromQuery] List<int>? ids)
+        public async Task<ActionResult<IEnumerable<PostDTO>>> Get([FromQuery] List<int>? ids)
         {
             var posts = (await DataEntityService.Get(((DataContext)DataEntityService.DataContext).Posts, ids)).Select(x => x.ToDTO()).ToList();
             return Ok(posts);
@@ -37,7 +37,7 @@ namespace DevLore.Controllers
         /// <param name="entities">Список постов.</param>
         /// <returns>Результат операции.</returns>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] List<RequestPostDTO> entities)
+        public async Task<IActionResult> Post([FromBody] List<PostDTO> entities)
         {
             var status = await DataEntityService.Set(((DataContext)DataEntityService.DataContext).Posts, entities.Select(x => x.ToEntity()).ToList());
 
