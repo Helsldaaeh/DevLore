@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DevLore.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,7 +46,7 @@ namespace DevLore.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Username = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    Hash_password = table.Column<string>(type: "text", nullable: false),
+                    Hashed_Password = table.Column<string>(type: "text", nullable: false),
                     Profile = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp", nullable: true, defaultValueSql: "current_timestamp"),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp", nullable: true)

@@ -66,7 +66,7 @@ namespace DevLore.Migrations
                         .HasColumnType("timestamp")
                         .HasDefaultValueSql("current_timestamp");
 
-                    b.Property<string>("Hash_password")
+                    b.Property<string>("Hashed_Password")
                         .IsRequired()
                         .HasColumnType("text");
 
