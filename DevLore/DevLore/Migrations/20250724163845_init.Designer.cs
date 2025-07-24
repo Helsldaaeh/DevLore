@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DevLore.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250627174206_Init")]
-    partial class Init
+    [Migration("20250724163845_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,7 +69,7 @@ namespace DevLore.Migrations
                         .HasColumnType("timestamp")
                         .HasDefaultValueSql("current_timestamp");
 
-                    b.Property<string>("Hash_password")
+                    b.Property<string>("Hashed_Password")
                         .IsRequired()
                         .HasColumnType("text");
 
