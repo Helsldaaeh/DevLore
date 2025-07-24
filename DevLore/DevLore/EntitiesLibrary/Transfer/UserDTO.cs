@@ -10,7 +10,7 @@ namespace DevLore.EntitiesLibrary.Transfer
     public record class UserDTO : IdentifiableEntityDTO
     {
         public string Profile { get; set; } = "";
-        public string Hashed_Password { get; set; }
+        public string Hash_password { get; set; }
         public string Username { get; set; }
     }
 }
