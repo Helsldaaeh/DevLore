@@ -16,7 +16,6 @@ namespace DevLore.EntitiesLibrary.Transfer
             {
                 Id = common.Id,
                 Username = common.Username,
-                Hash_password = common.Hash_password,
                 Profile = common.Profile
             };
         }
@@ -30,7 +29,6 @@ namespace DevLore.EntitiesLibrary.Transfer
                 UpdatedAt = common.UpdatedAt,
                 Id = common.Id,
                 Username = common.Username,
-                Hash_password = common.Hash_password,
                 Profile = common.Profile
             };
         }
