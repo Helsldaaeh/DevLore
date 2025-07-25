@@ -6,7 +6,6 @@ namespace DevLore.EntitiesLibrary.Entities.Common
 {
     public class Post : IdentifiableEntity
     {
-
         public const int ContentLength = 2048;
         /// <summary>
         ///     Конфигурация модели <see cref="Group" />.
