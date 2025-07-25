@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DevLore.EntitiesLibrary.Entities.Security
+namespace EntitiesLibrary.Entities.Security
 {
     public class RefreshTokenRequest
 

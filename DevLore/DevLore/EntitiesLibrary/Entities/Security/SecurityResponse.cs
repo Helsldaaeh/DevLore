@@ -1,6 +1,4 @@
-﻿using DevLore.EntitiesLibrary.Entities.Security;
-
-namespace DevLore.EntitiesLibrary.Entities.Security
+﻿namespace EntitiesLibrary.Entities.Security
 {
     public class SecurityResponse
     {
