@@ -1,17 +1,17 @@
-// src/components/News.tsx
+// src/components/DevLore.tsx
 import { useState, useEffect } from 'react';
 import { 
   type PostDTO, 
   fetchPosts, 
   createOrUpdatePosts, 
   deletePosts 
-} from '../api/post_service';
+} from '../api/post.service';
 import { 
   type UserDTO, 
   fetchUsers, 
   createOrUpdateUsers, 
   deleteUsers 
-} from '../api/user_service';
+} from '../api/user.service';
 import styles from '../styles/DevLore.module.css';
 
 
@@ -62,11 +62,9 @@ const DevLore = () => {
     loadPosts();
   }, []);
 
-  const handlePostContentInputChange = (e: React.ChangeEvent<HTMLInputElement>, ) => {
-    setPostFormData({ Content: e.target.value});
-  };
-  const handlePostUserIdInputChange = (e: React.ChangeEvent<HTMLInputElement>, ) => {
-    setPostFormData({ UserId: Number(e.target.value)});
+  const handlePostContentInputChange = (e1: React.ChangeEvent<HTMLInputElement>,
+                                        e2: React.ChangeEvent<HTMLInputElement>, ) => {
+    setPostFormData({UserId: Number(e1.target.value), Content: e2.target.value});
   };
   const handleUserUsernameInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserFormData({ Username: e.target.value});
@@ -128,13 +126,14 @@ const DevLore = () => {
     setUserFormData({ Username: userFormData.Username,
       Hash_password: userFormData.Hash_password,
       Profile: '' });
-    setPostFormData({Content: ''});
+    setPostFormData({UserId: Number(), Content: ''});
     setEditingId(null);
   };
 
   const setupPostEdit = (post: PostDTO) => {
     if (post.id === undefined || post.id === null) return;
     setPostFormData({
+      UserId: post.UserId,
       Content: post.Content || ''
      });
     setEditingId(post.id);
