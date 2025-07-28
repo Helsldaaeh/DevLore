@@ -1,5 +1,4 @@
-﻿namespace EntitiesLibrary.Entities.Security
-{
+﻿namespace DevLore.EntitiesLibrary.Entities.Security {
     public class RegisterRequest : SecurityRequest
     {
         public string RoleName { get; set; } = "";

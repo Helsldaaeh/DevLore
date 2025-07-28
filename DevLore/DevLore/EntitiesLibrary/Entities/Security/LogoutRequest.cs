@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EntitiesLibrary.Entities.Security
+namespace DevLore.EntitiesLibrary.Entities.Security
 {
     public class LogoutRequest
     {

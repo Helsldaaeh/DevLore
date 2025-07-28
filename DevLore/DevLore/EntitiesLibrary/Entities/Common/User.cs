@@ -2,6 +2,7 @@
 using DevLore.EntitiesLibrary.Data;
 using DevLore.EntitiesLibrary.Entities;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.AspNetCore.Identity;
 
 namespace DevLore.EntitiesLibrary.Entities.Common
 {
@@ -50,18 +51,13 @@ namespace DevLore.EntitiesLibrary.Entities.Common
         public string PasswordHash { get; set; }
         public string Profile { get; set; } = "";
         public List<Post>? Posts { get; set; } = [];
-        //User(string Username, string password)
-        //{
-        //    Hash_password = BCrypt.Net.BCrypt.HashPassword(password);
-        //    Posts = new List<Post>();
-        //    this.Username = Username;
-        //}
-        //public void changePassword(string verPassword, string password)
-        //{
-        //    if (BCrypt.Net.BCrypt.HashPassword(verPassword) == Hash_password)
-        //        Hash_password = BCrypt.Net.BCrypt.HashPassword(password);
-        //}
 
-
+        void PasswordHasher(string Password)
+        {
+            if (Password.Length < 10) throw new Exception("Слишком короткий пароль") ;
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(Password, 8);
+        }
+        bool Verify(string Password) { return BCrypt.Net.BCrypt.EnhancedVerify(Password, PasswordHash); }
+        // Добавить защиту от перебора(если начинается перебор, то добавитб ограничение(ожидание 30 сек каждые 5 попыток)
     }
 }
