@@ -50,6 +50,7 @@ namespace DevLore.EntitiesLibrary.Entities.Common
         public string PasswordHash { get; set; }
         public string Profile { get; set; } = "";
         public List<Post>? Posts { get; set; } = [];
+        
         //User(string Username, string password)
         //{
         //    Hash_password = BCrypt.Net.BCrypt.HashPassword(password);
