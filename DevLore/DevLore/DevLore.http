@@ -1,6 +1,6 @@
 @DevLore_HostAddress = http://localhost:5218
 
-GET {{DevLore_HostAddress}}/weatherforecast/
+GET {{DevLore_HostAddress}}/DevLore/
 Accept: application/json
 
 ###
