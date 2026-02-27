@@ -7,7 +7,7 @@ using DevLore.EntitiesLibrary.Entities.Security;
 
 namespace DevLore.EntitiesLibrary.Entities.Common
 {
-    public class User : IdentifiableEntity
+    public class LikeOrDislike : IdentifiableEntity
     {
 
         /*                   __ _                       _   _
@@ -40,27 +40,16 @@ namespace DevLore.EntitiesLibrary.Entities.Common
             /// <param name="builder">Набор интерфейсов настройки модели.</param>
             public override void Configure(EntityTypeBuilder<User> builder)
             {
-                builder.Property(group => group.Username)
-                    .HasMaxLength(TitleLengthMax);
                 base.Configure(builder);
             }
         }
 
         #endregion
 
-        public string Username { get; set; }
-        public string PasswordHash { get; set; }
-        public string Profile { get; set; } = "";
-        public mail LogIn { get; set; } = "exampleGmail.com";
-        public List<Post>? Posts { get; set; } = [];
-        public Role Role { get; set; }
+        public bool LikeOrDis { get; set; }
+        public User? User { get; set; }
+        public int UserId { get; set; }
 
-        void PasswordHasher(string Password)
-        {
-            if (Password.Length < 10) throw new Exception("Слишком короткий пароль") ;
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(Password, 8);
-        }
-        bool Verify(string Password) { return BCrypt.Net.BCrypt.EnhancedVerify(Password, PasswordHash); }
         // Добавить защиту от перебора(если начинается перебор, то добавитб ограничение(ожидание 30 сек каждые 5 попыток)
     }
 }

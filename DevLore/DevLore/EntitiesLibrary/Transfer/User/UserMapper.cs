@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DevLore.EntitiesLibrary.Transfer
+namespace DevLore.EntitiesLibrary.Transfer.User
 {
     public static class UserMapper
     {

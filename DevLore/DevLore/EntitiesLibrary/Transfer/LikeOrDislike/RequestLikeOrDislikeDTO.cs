@@ -1,10 +1,10 @@
 ﻿namespace DevLore.EntitiesLibrary.Transfer
 {
-    public record class RequestPostDTO
+    public class RequestLikeOrDislikeDTO
     {
         public int? Id { get; init; }
         public int UserId { get; init; }
-        public string Content { get; set; } = "";
+        public bool LikeOrDislike { get; set; }
 
     }
 }

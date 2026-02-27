@@ -4,6 +4,7 @@ using DevLore.Data;
 using DevLore.EntitiesLibrary.Transfer;
 using DevLore.Services;
 using DevLore.EntitiesLibrary.Entities;
+using DevLore.EntitiesLibrary.Transfer.Post;
 
 namespace DevLore.Controllers
 {

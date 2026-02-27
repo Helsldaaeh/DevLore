@@ -5,16 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DevLore.EntitiesLibrary.Transfer
+namespace DevLore.EntitiesLibrary.Transfer.Post
 {
     public static class PostMapper
     {
         public static Post ToEntity(this RequestPostDTO common)
         {
-            return new Post {
-            Id = common.Id,
-            UserId = common.UserId,
-            Content = common.Content
+            return new Post
+            {
+                Id = common.Id,
+                UserId = common.UserId,
+                Content = common.Content
             };
         }
 
