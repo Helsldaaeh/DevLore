@@ -1,4 +1,4 @@
-﻿namespace DevLore.EntitiesLibrary.Transfer
+﻿namespace DevLore.EntitiesLibrary.Transfer.LikeOrDislikeTransferLogic
 {
     public class RequestLikeOrDislikeDTO
     {

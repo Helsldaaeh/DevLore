@@ -1,4 +1,4 @@
-﻿namespace DevLore.EntitiesLibrary.Transfer.Post
+﻿namespace DevLore.EntitiesLibrary.Transfer.PostTransferLogic
 {
     public record class RequestPostDTO
     {

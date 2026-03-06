@@ -1,17 +1,12 @@
-﻿using DevLore.EntitiesLibrary.Entities.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DevLore.EntitiesLibrary.Entities.Common.Comment;
 
-namespace DevLore.EntitiesLibrary.Transfer.Post
+namespace DevLore.EntitiesLibrary.Transfer.CommenTransferLogic
 {
-    public static class PostMapper
+    public static class Comment
     {
-        public static Post ToEntity(this RequestPostDTO common)
+        public static Comment ToEntity(this CommentDTO common)
         {
-            return new Post
+            return new Comment
             {
                 Id = common.Id,
                 UserId = common.UserId,
@@ -20,9 +15,9 @@ namespace DevLore.EntitiesLibrary.Transfer.Post
         }
 
 
-        public static PostDTO ToDTO(this Post common)
+        public static CommentDTO ToDTO(this Comment common)
         {
-            return new PostDTO
+            return new CommentDTO
             {
                 CreatedAt = common.CreatedAt,
                 UpdatedAt = common.UpdatedAt,

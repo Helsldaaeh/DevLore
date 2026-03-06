@@ -52,10 +52,16 @@ namespace DevLore.Data
             modelBuilder.Entity<EntitiesLibrary.Entities.Security.User>().ToTable("AspNetUsers");
             modelBuilder.ApplyConfiguration(new User.Configuration(Configuration));
             modelBuilder.ApplyConfiguration(new Post.Configuration(Configuration));
+            modelBuilder.ApplyConfiguration(new Comment.Configuration(Configuration));
+            modelBuilder.ApplyConfiguration(new LikeOrDislike.Configuration(Configuration));
             base.OnModelCreating(modelBuilder);
         }
         public DbSet<User> Users => Set<User>();
         public DbSet<Post> Posts => Set<Post>();
+        public DbSet<Comment> Comments => Set<Comment>();
+        public DbSet<LikeOrDislike> LikeOrDislikes => Set<LikeOrDislike>();
+        public DbSet<Role> Roles => Set<Role>();
+
     }
 }
 

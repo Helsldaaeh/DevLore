@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using DevLore.EntitiesLibrary.Data;
 using DevLore.EntitiesLibrary.Entities;
+using DevLore.EntitiesLibrary.Transfer.LikeOrDislikeTransferLogic;
 
 namespace DevLore.EntitiesLibrary.Entities.Common
 {
@@ -32,5 +33,8 @@ namespace DevLore.EntitiesLibrary.Entities.Common
         public int UserId { get; set; }
         public User? User { get; set; }
         public string Content { get; set; } = "";
+        public List<Comment>? Comments{ get; set; }
+        public List<LikeOrDislike>? { get; set; }
+
     }
 }

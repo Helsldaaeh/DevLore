@@ -42,6 +42,16 @@ namespace DevLore.EntitiesLibrary.Entities.Common
             {
                 builder.Property(group => group.Username)
                     .HasMaxLength(TitleLengthMax);
+                builder.Property(group => group.PasswordHash)
+                    .HasMaxLength(TitleLengthMax);
+                    
+                builder.HasMany(x => x.Posts)
+                    .WithOne(y => y.User);
+                base.Configure(builder);
+                
+                builder.HasOne(x => x.Roles)
+                    .WithOne(y => y.User)
+                    .WithForeignKey();
                 base.Configure(builder);
             }
         }
@@ -51,7 +61,7 @@ namespace DevLore.EntitiesLibrary.Entities.Common
         public string Username { get; set; }
         public string PasswordHash { get; set; }
         public string Profile { get; set; } = "";
-        public mail LogIn { get; set; } = "exampleGmail.com";
+        public string LogIn { get; set; } = "exampleGmail.com";
         public List<Post>? Posts { get; set; } = [];
         public Role Role { get; set; }
 
@@ -61,6 +71,11 @@ namespace DevLore.EntitiesLibrary.Entities.Common
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(Password, 8);
         }
         bool Verify(string Password) { return BCrypt.Net.BCrypt.EnhancedVerify(Password, PasswordHash); }
+        
+        void LoginValidation(string Mail)
+        {
+            
+        }
         // Добавить защиту от перебора(если начинается перебор, то добавитб ограничение(ожидание 30 сек каждые 5 попыток)
     }
 }

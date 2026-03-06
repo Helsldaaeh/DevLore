@@ -1,6 +1,6 @@
-﻿using DevLore.EntitiesLibrary.Entities.Common;
+﻿using DevLore.EntitiesLibrary.Entities.Common.LikeOrDislike;
 
-namespace DevLore.EntitiesLibrary.Transfer.LikeOrDislike
+namespace DevLore.EntitiesLibrary.Transfer.LikeOrDislikeTransferLogic
 {
     public static class LikeOrDislikeMapper
     {
@@ -23,7 +23,7 @@ namespace DevLore.EntitiesLibrary.Transfer.LikeOrDislike
                 UpdatedAt = common.UpdatedAt,
                 Id = common.Id,
                 UserId = common.UserId,
-                Content = common.Content
+                LikeOrDislike = common.LikeOrDislike
             };
         }
     }

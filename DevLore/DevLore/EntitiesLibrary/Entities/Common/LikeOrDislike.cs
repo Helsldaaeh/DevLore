@@ -32,14 +32,20 @@ namespace DevLore.EntitiesLibrary.Entities.Common
         ///     Конфигурация модели <see cref="Group" />.
         /// </summary>
         /// <param name="configuration">Конфигурация базы данных.</param>
-        public class Configuration(BaseConfiguration configuration) : Configuration<User>(configuration)
+        public class Configuration(BaseConfiguration configuration) : Configuration<LikeOrDislike>(configuration)
         {
             /// <summary>
             ///     Задать конфигурацию для модели.
             /// </summary>
             /// <param name="builder">Набор интерфейсов настройки модели.</param>
-            public override void Configure(EntityTypeBuilder<User> builder)
+            public override void Configure(EntityTypeBuilder<LikeOrDislike> builder)
             {
+                builder.Property(group => group.Content)
+                    .HasMaxLength(ContentLength);
+
+                builder.HasOne(x => x.User)
+                    .WithMany(y => y.Posts)
+                    .HasForeignKey(x => x.UserId);
                 base.Configure(builder);
             }
         }
