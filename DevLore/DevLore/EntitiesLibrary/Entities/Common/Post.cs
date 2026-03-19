@@ -34,7 +34,7 @@ namespace DevLore.EntitiesLibrary.Entities.Common
         public User? User { get; set; }
         public string Content { get; set; } = "";
         public List<Comment>? Comments{ get; set; }
-        public List<LikeOrDislike>? { get; set; }
+        public List<LikeOrDislike>? LikeOrDislikes { get; set; }
 
     }
 }

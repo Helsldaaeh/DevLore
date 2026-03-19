@@ -50,7 +50,7 @@ namespace DevLore.EntitiesLibrary.Entities.Common
 
         public User User { get; set; }
         public string Content { get; set; }
-
+        
         public int UserId;
         // Добавить защиту от перебора(если начинается перебор, то добавитб ограничение(ожидание 30 сек каждые 5 попыток)
     }

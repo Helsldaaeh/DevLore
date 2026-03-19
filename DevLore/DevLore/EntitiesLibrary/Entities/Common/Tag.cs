@@ -1,13 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using DevLore.EntitiesLibrary.Data;
-using DevLore.EntitiesLibrary.Entities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Microsoft.AspNetCore.Identity;
-using DevLore.EntitiesLibrary.Entities.Security;
+﻿using DevLore.EntitiesLibrary.Data;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DevLore.EntitiesLibrary.Entities.Common
 {
-    public class LikeOrDislike : IdentifiableEntity
+    public class Tag : IdentifiableEntity
     {
 
         /*                   __ _                       _   _
@@ -32,25 +28,20 @@ namespace DevLore.EntitiesLibrary.Entities.Common
         ///     Конфигурация модели <see cref="Group" />.
         /// </summary>
         /// <param name="configuration">Конфигурация базы данных.</param>
-        public class Configuration(BaseConfiguration configuration) : Configuration<LikeOrDislike>(configuration)
+        public class Configuration(BaseConfiguration configuration) : Configuration<Tag>(configuration)
         {
             /// <summary>
             ///     Задать конфигурацию для модели.
             /// </summary>
             /// <param name="builder">Набор интерфейсов настройки модели.</param>
-            public override void Configure(EntityTypeBuilder<LikeOrDislike> builder)
+            public override void Configure(EntityTypeBuilder<Tag> builder)
             {
-
                 base.Configure(builder);
             }
         }
 
         #endregion
 
-        public bool LikeOrDis { get; set; }
-        public User? User { get; set; }
-        public int UserId { get; set; }
-
-        // Добавить защиту от перебора(если начинается перебор, то добавитб ограничение(ожидание 30 сек каждые 5 попыток)
+        public string Name{ get; set; }
     }
 }
