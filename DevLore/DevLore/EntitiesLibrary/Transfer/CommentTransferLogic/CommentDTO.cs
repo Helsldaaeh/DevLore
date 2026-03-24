@@ -1,8 +1,10 @@
-﻿namespace DevLore.EntitiesLibrary.Transfer.CommenTransferLogic
+﻿namespace DevLore.EntitiesLibrary.Transfer.CommentTransferLogic
 {
-    public class CommentDTO : IdentifiableEntityDTO
+    public record class CommentDTO : IdentifiableEntityDTO
     {
         public int UserId { get; init; }
-        public string Content { get; set; }
+        public int PostId { get; init; }
+        public int? ParentCommentId { get; init; }
+        public string Content { get; set; } = "";
     }
 }

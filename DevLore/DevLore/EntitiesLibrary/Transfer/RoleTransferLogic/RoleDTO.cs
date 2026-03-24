@@ -1,7 +1,7 @@
 ﻿namespace DevLore.EntitiesLibrary.Transfer.RoleTransferLogic
 {
-    public class RoleDTO : IdentifiableEntityDTO
+    public record class RoleDTO : IdentifiableEntityDTO
     {
-        public string Name { get;}
-    }
+        public string Name { get; set; } = "";
+    }   
 }

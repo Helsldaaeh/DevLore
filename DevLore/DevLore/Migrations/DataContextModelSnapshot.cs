@@ -17,10 +17,86 @@ namespace DevLore.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("ProductVersion", "10.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp")
+                        .HasDefaultValueSql("current_timestamp");
+
+                    b.Property<int?>("ParentCommentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCommentId");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Follow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp")
+                        .HasDefaultValueSql("current_timestamp");
+
+                    b.Property<DateTime>("FollowedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("FollowedUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FollowedUserId");
+
+                    b.HasIndex("UserId", "FollowedUserId")
+                        .IsUnique();
+
+                    b.ToTable("Follows");
+                });
 
             modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Post", b =>
                 {
@@ -40,6 +116,14 @@ namespace DevLore.Migrations
                         .HasColumnType("timestamp")
                         .HasDefaultValueSql("current_timestamp");
 
+                    b.Property<int?>("OriginalPostId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp");
 
@@ -48,9 +132,107 @@ namespace DevLore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OriginalPostId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Reaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CommentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp")
+                        .HasDefaultValueSql("current_timestamp");
+
+                    b.Property<int?>("PostId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommentId");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "PostId", "CommentId")
+                        .IsUnique();
+
+                    b.ToTable("Reactions");
+                });
+
+            modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp")
+                        .HasDefaultValueSql("current_timestamp");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.User", b =>
@@ -66,13 +248,23 @@ namespace DevLore.Migrations
                         .HasColumnType("timestamp")
                         .HasDefaultValueSql("current_timestamp");
 
-                    b.Property<string>("Hashed_Password")
+                    b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("Profile")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp");
@@ -84,81 +276,169 @@ namespace DevLore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Security.User", b =>
+            modelBuilder.Entity("PostTag", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<int>("AccessFailedCount")
+                    b.Property<int>("PostsId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("text");
+                    b.Property<int>("TagsId")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("text");
+                    b.HasKey("PostsId", "TagsId");
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
+                    b.HasIndex("TagsId");
 
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean");
+                    b.ToTable("PostTags", (string)null);
+                });
 
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
+            modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Comment", b =>
+                {
+                    b.HasOne("DevLore.EntitiesLibrary.Entities.Common.Comment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Property<string>("NormalizedEmail")
-                        .HasColumnType("text");
+                    b.HasOne("DevLore.EntitiesLibrary.Entities.Common.Post", "Post")
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<string>("NormalizedUserName")
-                        .HasColumnType("text");
+                    b.HasOne("DevLore.EntitiesLibrary.Entities.Common.User", "User")
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
+                    b.Navigation("ParentComment");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
+                    b.Navigation("Post");
 
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean");
+                    b.Navigation("User");
+                });
 
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("text");
+            modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Follow", b =>
+                {
+                    b.HasOne("DevLore.EntitiesLibrary.Entities.Common.User", "FollowedUser")
+                        .WithMany("Followers")
+                        .HasForeignKey("FollowedUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<DateTime>("RefreshTokenExpiry")
-                        .HasColumnType("timestamp with time zone");
+                    b.HasOne("DevLore.EntitiesLibrary.Entities.Common.User", "User")
+                        .WithMany("Followings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
+                    b.Navigation("FollowedUser");
 
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Post", b =>
                 {
+                    b.HasOne("DevLore.EntitiesLibrary.Entities.Common.Post", "OriginalPost")
+                        .WithMany()
+                        .HasForeignKey("OriginalPostId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("DevLore.EntitiesLibrary.Entities.Common.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("OriginalPost");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Reaction", b =>
+                {
+                    b.HasOne("DevLore.EntitiesLibrary.Entities.Common.Comment", "Comment")
+                        .WithMany()
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DevLore.EntitiesLibrary.Entities.Common.Post", "Post")
+                        .WithMany("Reactions")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DevLore.EntitiesLibrary.Entities.Common.User", "User")
+                        .WithMany("Reactions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("Post");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.User", b =>
                 {
+                    b.HasOne("DevLore.EntitiesLibrary.Entities.Common.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("PostTag", b =>
+                {
+                    b.HasOne("DevLore.EntitiesLibrary.Entities.Common.Post", null)
+                        .WithMany()
+                        .HasForeignKey("PostsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DevLore.EntitiesLibrary.Entities.Common.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Comment", b =>
+                {
+                    b.Navigation("Replies");
+                });
+
+            modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Post", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Reactions");
+                });
+
+            modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.User", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Followers");
+
+                    b.Navigation("Followings");
+
                     b.Navigation("Posts");
+
+                    b.Navigation("Reactions");
                 });
 #pragma warning restore 612, 618
         }

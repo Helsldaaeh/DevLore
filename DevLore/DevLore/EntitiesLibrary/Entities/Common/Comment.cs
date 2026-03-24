@@ -1,57 +1,55 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using DevLore.EntitiesLibrary.Data;
-using DevLore.EntitiesLibrary.Entities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Microsoft.AspNetCore.Identity;
-using DevLore.EntitiesLibrary.Entities.Security;
+﻿using DevLore.EntitiesLibrary.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DevLore.EntitiesLibrary.Entities.Common
 {
     public class Comment : IdentifiableEntity
     {
-
-        /*                   __ _                       _   _
-       *   ___ ___  _ __  / _(_) __ _ _   _ _ __ __ _| |_(_) ___  _ __
-       *  / __/ _ \| '_ \| |_| |/ _` | | | | '__/ _` | __| |/ _ \| '_ \
-       * | (_| (_) | | | |  _| | (_| | |_| | | | (_| | |_| | (_) | | | |
-       *  \___\___/|_| |_|_| |_|\__, |\__,_|_|  \__,_|\__|_|\___/|_| |_|
-       *                        |___/
-       * Константы, задающие базовые конфигурации полей
-       * и ограничения модели.
-       */
-
         #region Configuration
+        public const int ContentLengthMax = 500;
 
-
-
-        public const int TitleLengthMax = 256;
-        public const int PassLengthMax = 256;
-        public const int ProfileLengthMax = 256;
-
-        /// <summary>
-        ///     Конфигурация модели <see cref="Group" />.
-        /// </summary>
-        /// <param name="configuration">Конфигурация базы данных.</param>
-        public class Configuration(BaseConfiguration configuration) : Configuration<User>(configuration)
+        public class Configuration(BaseConfiguration configuration) : Configuration<Comment>(configuration)
         {
-            /// <summary>
-            ///     Задать конфигурацию для модели.
-            /// </summary>
-            /// <param name="builder">Набор интерфейсов настройки модели.</param>
-            public override void Configure(EntityTypeBuilder<User> builder)
+            public override void Configure(EntityTypeBuilder<Comment> builder)
             {
-                builder.Property(group => group.Username)
-                    .HasMaxLength(TitleLengthMax);
+                builder.Property(c => c.Content)
+                    .HasMaxLength(ContentLengthMax)
+                    .IsRequired();
+                builder.Property(c => c.UserId).IsRequired();
+                builder.Property(c => c.PostId).IsRequired();
+
+                builder.HasOne(c => c.User)
+                    .WithMany(u => u.Comments)
+                    .HasForeignKey(c => c.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                builder.HasOne(c => c.Post)
+                    .WithMany(p => p.Comments)
+                    .HasForeignKey(c => c.PostId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasOne(c => c.ParentComment)
+                    .WithMany(c => c.Replies)
+                    .HasForeignKey(c => c.ParentCommentId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                builder.HasIndex(c => c.UserId);
+                builder.HasIndex(c => c.PostId);
+                builder.HasIndex(c => c.ParentCommentId);
+
                 base.Configure(builder);
             }
         }
-
         #endregion
 
-        public User User { get; set; }
-        public string Content { get; set; }
-        
-        public int UserId;
-        // Добавить защиту от перебора(если начинается перебор, то добавитб ограничение(ожидание 30 сек каждые 5 попыток)
+        public User User { get; set; } = null!;
+        public string Content { get; set; } = string.Empty;
+        public int UserId { get; set; }
+        public int PostId { get; set; }
+        public Post Post { get; set; } = null!;
+        public int? ParentCommentId { get; set; }
+        public Comment? ParentComment { get; set; }
+        public List<Comment>? Replies { get; set; }
     }
 }

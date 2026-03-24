@@ -1,8 +1,6 @@
-﻿using DevLore.EntitiesLibrary.Data;
-using DevLore.EntitiesLibrary.Entities.Common;
-using DevLore.EntitiesLibrary;
+﻿using DevLore.EntitiesLibrary.Entities.Common;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
+using DevLore.EntitiesLibrary.Data;
 
 namespace DevLore.Data
 {
@@ -10,29 +8,25 @@ namespace DevLore.Data
     {
         private BaseConfiguration Configuration { get; } = configuration;
 
-        /// <summary>
-        ///     Обработать настройку сессии.
-        /// </summary>
-        /// <param name="optionsBuilder">Набор интерфейсов настройки сессии.</param>
-        /// <exception cref="Exception">При ошибке подключения.</exception>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             Configuration.ConfigureContext(optionsBuilder);
-
             base.OnConfiguring(optionsBuilder);
         }
 
-        /// <summary>
-        ///     Попытаться асинхронно инициализировать сессию.
-        ///     Используется для проверки подключения
-        ///     и инициализации структуры таблиц.
-        /// </summary>
-        /// <returns>Статус успешности инициализации.</returns>
         public async Task<bool> TryInitializeAsync()
         {
             try
             {
                 await Database.MigrateAsync();
+
+                // Создаём роль "User", если её нет
+                if (!await Roles.AnyAsync())
+                {
+                    Roles.Add(new Role { Name = "User" });
+                    await SaveChangesAsync();
+                }
+
                 return await Database.CanConnectAsync();
             }
             catch (Exception ex)
@@ -42,29 +36,23 @@ namespace DevLore.Data
             }
         }
 
-        /// <summary>
-        ///     Обработать инициализацию модели.
-        ///     Используется для дополнительной настройки модели.
-        /// </summary>
-        /// <param name="modelBuilder">Набор интерфейсов настройки модели.</param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<EntitiesLibrary.Entities.Security.User>().ToTable("AspNetUsers");
             modelBuilder.ApplyConfiguration(new User.Configuration(Configuration));
             modelBuilder.ApplyConfiguration(new Post.Configuration(Configuration));
             modelBuilder.ApplyConfiguration(new Comment.Configuration(Configuration));
-            modelBuilder.ApplyConfiguration(new LikeOrDislike.Configuration(Configuration));
+            modelBuilder.ApplyConfiguration(new Reaction.Configuration(Configuration));
+            modelBuilder.ApplyConfiguration(new Tag.Configuration(Configuration));
+            modelBuilder.ApplyConfiguration(new Follow.Configuration(Configuration));
             base.OnModelCreating(modelBuilder);
         }
+
         public DbSet<User> Users => Set<User>();
         public DbSet<Post> Posts => Set<Post>();
         public DbSet<Comment> Comments => Set<Comment>();
-        public DbSet<LikeOrDislike> LikeOrDislikes => Set<LikeOrDislike>();
+        public DbSet<Reaction> Reactions => Set<Reaction>();
+        public DbSet<Tag> Tags => Set<Tag>();
         public DbSet<Role> Roles => Set<Role>();
-
+        public DbSet<Follow> Follows => Set<Follow>();
     }
 }
-
-
-
-

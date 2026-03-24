@@ -1,78 +1,93 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using BCrypt.Net;
 using DevLore.EntitiesLibrary.Data;
-using DevLore.EntitiesLibrary.Entities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Microsoft.AspNetCore.Identity;
-using DevLore.EntitiesLibrary.Entities.Security;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DevLore.EntitiesLibrary.Entities.Common
 {
     public class User : IdentifiableEntity
     {
-
-        /*                   __ _                       _   _
-       *   ___ ___  _ __  / _(_) __ _ _   _ _ __ __ _| |_(_) ___  _ __
-       *  / __/ _ \| '_ \| |_| |/ _` | | | | '__/ _` | __| |/ _ \| '_ \
-       * | (_| (_) | | | |  _| | (_| | |_| | | | (_| | |_| | (_) | | | |
-       *  \___\___/|_| |_|_| |_|\__, |\__,_|_|  \__,_|\__|_|\___/|_| |_|
-       *                        |___/
-       * Константы, задающие базовые конфигурации полей
-       * и ограничения модели.
-       */
-
         #region Configuration
+        public const int UsernameLengthMax = 256;
+        public const int PasswordHashLengthMax = 256;
+        public const int ProfileLengthMax = 1024;
+        public const int EmailLengthMax = 256;
 
-
-
-        public const int TitleLengthMax = 256;
-        public const int PassLengthMax = 256;
-        public const int ProfileLengthMax = 256;
-
-        /// <summary>
-        ///     Конфигурация модели <see cref="Group" />.
-        /// </summary>
-        /// <param name="configuration">Конфигурация базы данных.</param>
         public class Configuration(BaseConfiguration configuration) : Configuration<User>(configuration)
         {
-            /// <summary>
-            ///     Задать конфигурацию для модели.
-            /// </summary>
-            /// <param name="builder">Набор интерфейсов настройки модели.</param>
             public override void Configure(EntityTypeBuilder<User> builder)
             {
-                builder.Property(group => group.Username)
-                    .HasMaxLength(TitleLengthMax);
-                builder.Property(group => group.PasswordHash)
-                    .HasMaxLength(TitleLengthMax);
-                    
-                builder.HasMany(x => x.Posts)
-                    .WithOne(y => y.User);
-                base.Configure(builder);
-                
+                builder.Property(u => u.Username)
+                    .HasMaxLength(UsernameLengthMax)
+                    .IsRequired();
+                builder.Property(u => u.PasswordHash)
+                    .HasMaxLength(PasswordHashLengthMax)
+                    .IsRequired();
+                builder.Property(u => u.Profile)
+                    .HasMaxLength(ProfileLengthMax);
+                builder.Property(u => u.Email)
+                    .HasMaxLength(EmailLengthMax)
+                    .IsRequired();
+
+                builder.HasOne(u => u.Role)
+                    .WithMany()
+                    .HasForeignKey(u => u.RoleId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                builder.HasMany(u => u.Posts)
+                    .WithOne(p => p.User)
+                    .HasForeignKey(p => p.UserId);
+                builder.HasMany(u => u.Reactions)
+                    .WithOne(r => r.User)
+                    .HasForeignKey(r => r.UserId);
+                builder.HasMany(u => u.Comments)
+                    .WithOne(c => c.User)
+                    .HasForeignKey(c => c.UserId);
+
+                builder.HasMany(u => u.Followings)
+                    .WithOne(f => f.User)
+                    .HasForeignKey(f => f.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                builder.HasMany(u => u.Followers)
+                    .WithOne(f => f.FollowedUser)
+                    .HasForeignKey(f => f.FollowedUserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasIndex(u => u.Username).IsUnique();
+                builder.HasIndex(u => u.Email).IsUnique();
+
                 base.Configure(builder);
             }
         }
-
         #endregion
 
-        public string Username { get; set; }
-        public string PasswordHash { get; set; }
-        public string Profile { get; set; } = "";   
-        public string LogIn { get; set; } = "exampleGmail.com";
-        public List<Post>? Posts { get; set; } = [];
-        public Role Role { get; set; }
+        public string Username { get; set; } = string.Empty;
+        public string PasswordHash { get; set; } = string.Empty;
+        public string Profile { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public int RoleId { get; set; }
+        public Role? Role { get; set; }
 
-        void PasswordHasher(string Password)
+        public List<Post>? Posts { get; set; }
+        public List<Reaction>? Reactions { get; set; }
+        public List<Comment>? Comments { get; set; }
+        public List<Follow>? Followings { get; set; }
+        public List<Follow>? Followers { get; set; }
+
+        public void SetPassword(string password)
         {
-            if (Password.Length < 10) throw new Exception("Слишком короткий пароль") ;
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(Password, 8);
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Пароль не может быть пустым", nameof(password));
+            if (password.Length < 8)
+                throw new ArgumentException("Пароль должен быть не менее 8 символов", nameof(password));
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
         }
-        bool Verify(string Password) { return BCrypt.Net.BCrypt.EnhancedVerify(Password, PasswordHash); }
-        
-        void LoginValidation(string Mail)
+
+        public bool VerifyPassword(string password)
         {
-            
+            if (string.IsNullOrWhiteSpace(password))
+                return false;
+            return BCrypt.Net.BCrypt.Verify(password, PasswordHash);
         }
-        // Добавить защиту от перебора(если начинается перебор, то добавитб ограничение(ожидание 30 сек каждые 5 попыток)
     }
 }

@@ -1,30 +1,28 @@
-﻿using DevLore.EntitiesLibrary.Entities.Common.Post;
+﻿using DevLore.EntitiesLibrary.Entities.Common;
 
 namespace DevLore.EntitiesLibrary.Transfer.PostTransferLogic
 {
     public static class PostMapper
     {
-        public static Post ToEntity(this RequestPostDTO common)
+        public static Post ToEntity(this RequestPostDTO dto) => new()
         {
-            return new Post
-            {
-                Id = common.Id,
-                UserId = common.UserId,
-                Content = common.Content
-            };
-        }
+            Id = dto.Id,
+            UserId = dto.UserId,
+            Content = dto.Content,
+            Type = dto.Type,
+            OriginalPostId = dto.OriginalPostId
+        };
 
-
-        public static PostDTO ToDTO(this Post common)
+        public static PostDTO ToDTO(this Post entity) => new()
         {
-            return new PostDTO
-            {
-                CreatedAt = common.CreatedAt,
-                UpdatedAt = common.UpdatedAt,
-                Id = common.Id,
-                UserId = common.UserId,
-                Content = common.Content
-            };
-        }
+            CreatedAt = entity.CreatedAt,
+            UpdatedAt = entity.UpdatedAt,
+            Id = entity.Id,
+            UserId = entity.UserId,
+            Content = entity.Content,
+            Type = entity.Type,
+            OriginalPostId = entity.OriginalPostId,
+            Tags = entity.Tags?.Select(t => t.Name).ToList()
+        };
     }
 }

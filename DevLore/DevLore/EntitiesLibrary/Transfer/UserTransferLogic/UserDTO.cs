@@ -1,14 +1,11 @@
-﻿using DevLore.EntitiesLibrary.Entities.Common.Post;
-using DevLore.EntitiesLibrary.Entities.Common.Role;
-
-namespace DevLore.EntitiesLibrary.Transfer.UserTransferLogic
+﻿namespace DevLore.EntitiesLibrary.Transfer.UserTransferLogic
 {
     public record class UserDTO : IdentifiableEntityDTO
     {
+        public string Username { get; set; } = "";
+        public string Email { get; set; } = "";
         public string Profile { get; set; } = "";
-        public string Username { get; set; }
-        public string LogIn { get; set; }
-        public List<Post>? Posts { get; set; }
-        public Role Role { get; set; }
+        public int RoleId { get; set; }
+        public string RoleName { get; set; } = "";
     }
 }

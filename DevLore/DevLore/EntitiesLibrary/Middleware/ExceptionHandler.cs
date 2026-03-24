@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Net;
+﻿using System.Net;
 
 namespace DevLore.EntitiesLibrary.Middleware
 {
@@ -16,7 +15,6 @@ namespace DevLore.EntitiesLibrary.Middleware
             catch (Exception exception)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
                 await context.Response.WriteAsJsonAsync(new
                 {
                     ErrorType = exception.GetType().ToString(),

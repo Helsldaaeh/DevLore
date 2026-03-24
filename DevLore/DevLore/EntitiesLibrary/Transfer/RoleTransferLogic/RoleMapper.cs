@@ -1,28 +1,21 @@
-﻿using DevLore.EntitiesLibrary.Entities.Common.Role;
+﻿using DevLore.EntitiesLibrary.Entities.Common;
 
 namespace DevLore.EntitiesLibrary.Transfer.RoleTransferLogic
 {
     public static class RoleMapper
     {
-        public static Role ToEntity(this RequestRoleDTO common)
+        public static Role ToEntity(this RequestRoleDTO dto) => new()
         {
-            return new Role
-            {
-                Id = common.Id,
-                Name = common.Name
-            };
-        }
+            Id = dto.Id,
+            Name = dto.Name
+        };
 
-
-        public static RoleDTO ToDTO(this Role common)
+        public static RoleDTO ToDTO(this Role entity) => new()
         {
-            return new RoleDTO
-            {
-                CreatedAt = common.CreatedAt,
-                UpdatedAt = common.UpdatedAt,
-                Id = common.Id,
-                Name = common.Name
-            };
-        }
+            CreatedAt = entity.CreatedAt,
+            UpdatedAt = entity.UpdatedAt,
+            Id = entity.Id,
+            Name = entity.Name
+        };
     }
 }

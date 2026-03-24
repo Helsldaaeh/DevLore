@@ -1,30 +1,27 @@
-﻿using DevLore.EntitiesLibrary.Entities.Common.Comment;
+﻿using DevLore.EntitiesLibrary.Entities.Common;
 
-namespace DevLore.EntitiesLibrary.Transfer.CommenTransferLogic
+namespace DevLore.EntitiesLibrary.Transfer.CommentTransferLogic
 {
-    public static class Comment
+    public static class CommentMapper
     {
-        public static Comment ToEntity(this CommentDTO common)
+        public static Comment ToEntity(this RequestCommentDTO dto) => new()
         {
-            return new Comment
-            {
-                Id = common.Id,
-                UserId = common.UserId,
-                Content = common.Content
-            };
-        }
+            Id = dto.Id,
+            UserId = dto.UserId,
+            PostId = dto.PostId,
+            ParentCommentId = dto.ParentCommentId,
+            Content = dto.Content
+        };
 
-
-        public static CommentDTO ToDTO(this Comment common)
+        public static CommentDTO ToDTO(this Comment entity) => new()
         {
-            return new CommentDTO
-            {
-                CreatedAt = common.CreatedAt,
-                UpdatedAt = common.UpdatedAt,
-                Id = common.Id,
-                UserId = common.UserId,
-                Content = common.Content
-            };
-        }
+            CreatedAt = entity.CreatedAt,
+            UpdatedAt = entity.UpdatedAt,
+            Id = entity.Id,
+            UserId = entity.UserId,
+            PostId = entity.PostId,
+            ParentCommentId = entity.ParentCommentId,
+            Content = entity.Content
+        };
     }
 }
