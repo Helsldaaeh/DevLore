@@ -3,6 +3,8 @@ using DevLore.EntitiesLibrary.Transfer.PostTransferLogic;
 using DevLore.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using DevLore.EntitiesLibrary.Entities.Common;
 
 namespace DevLore.Controllers
 {
@@ -12,14 +14,15 @@ namespace DevLore.Controllers
     public class PostController(PostService dataEntityService) : Controller
     {
         private PostService DataEntityService { get; } = dataEntityService;
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PostDTO>>> Get([FromQuery] List<int>? ids)
-        {
-            var posts = (await DataEntityService.Get(((DataContext)DataEntityService.DataContext).Posts, ids))
-                .Select(x => x.ToDTO()).ToList();
-            return Ok(posts);
-        }
+[HttpGet]
+public async Task<ActionResult<IEnumerable<PostDTO>>> Get([FromQuery] List<int>? ids)
+{
+    IQueryable<Post> query = ((DataContext)DataEntityService.DataContext).Posts.Include(p => p.User);
+    if (ids?.Count > 0)
+        query = query.Where(p => ids.Contains(p.Id.GetValueOrDefault()));
+    var posts = await query.ToListAsync();
+    return Ok(posts.Select(p => p.ToDTO()));
+}
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] List<RequestPostDTO> entities)
@@ -40,4 +43,5 @@ namespace DevLore.Controllers
             return Ok();
         }
     }
+    
 }

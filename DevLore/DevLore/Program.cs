@@ -11,6 +11,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
     .AddEnvironmentVariables();
 
+// Добавляем CORS ДО вызова builder.Build()
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -40,11 +52,11 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionHandler>();
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseCors(); // Используем CORS после builder.Build()
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
-app.UseCors();
 
 await InitializeDataSources(app);
 
@@ -59,7 +71,6 @@ void RegisterCoreServices(IServiceCollection services)
     services.AddScoped<TagService>();
     services.AddScoped<UserService>();
     services.AddScoped<FollowService>();
-    services.AddControllers();
 }
 
 void RegisterDataSources(IServiceCollection services)
