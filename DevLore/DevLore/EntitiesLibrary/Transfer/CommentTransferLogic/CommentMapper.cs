@@ -14,14 +14,15 @@ namespace DevLore.EntitiesLibrary.Transfer.CommentTransferLogic
         };
 
         public static CommentDTO ToDTO(this Comment entity) => new()
-        {
-            CreatedAt = entity.CreatedAt,
-            UpdatedAt = entity.UpdatedAt,
-            Id = entity.Id,
-            UserId = entity.UserId,
-            PostId = entity.PostId,
-            ParentCommentId = entity.ParentCommentId,
-            Content = entity.Content
-        };
+{
+    CreatedAt = entity.CreatedAt,
+    UpdatedAt = entity.UpdatedAt,
+    Id = entity.Id,
+    UserId = entity.UserId,
+    Username = entity.User?.Username ?? "Unknown",
+    PostId = entity.PostId,
+    ParentCommentId = entity.ParentCommentId,
+    Content = entity.Content
+};
     }
 }

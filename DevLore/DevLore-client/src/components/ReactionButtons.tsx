@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchReactions, addReaction, deleteReaction } from '../store/reactionsSlice';
+import { fetchReactions, toggleReaction } from '../store/reactionsSlice';
 import type { RootState } from '../store/store';
 import { ReactionType } from '../types';
 import type { AppDispatch } from '../store/store';
@@ -26,16 +26,11 @@ const ReactionButtons: React.FC<Props> = ({ targetId, targetType }) => {
   );
 
   const handleReact = (type: ReactionType) => {
-    if (userReaction) {
-      dispatch(deleteReaction([userReaction.id!]));
-    }
-    dispatch(
-      addReaction({
-        userId,
-        type,
-        [targetType === 'post' ? 'postId' : 'commentId']: targetId,
-      })
-    );
+    dispatch(toggleReaction({
+      userId,
+      type,
+      [targetType === 'post' ? 'postId' : 'commentId']: targetId,
+    }));
   };
 
   const likesCount = reactions.filter(
@@ -51,18 +46,16 @@ const ReactionButtons: React.FC<Props> = ({ targetId, targetType }) => {
   ).length;
 
   return (
-    <div className="reaction-buttons" style={{ display: 'flex', gap: '8px' }}>
+    <div className="reaction-buttons">
       <button
-        className="btn"
+        className={`btn ${userReaction?.type === ReactionType.Like ? 'active' : ''}`}
         onClick={() => handleReact(ReactionType.Like)}
-        style={{ color: userReaction?.type === ReactionType.Like ? 'blue' : 'black' }}
       >
         👍 Like ({likesCount})
       </button>
       <button
-        className="btn"
+        className={`btn ${userReaction?.type === ReactionType.Dislike ? 'active' : ''}`}
         onClick={() => handleReact(ReactionType.Dislike)}
-        style={{ color: userReaction?.type === ReactionType.Dislike ? 'red' : 'black' }}
       >
         👎 Dislike ({dislikesCount})
       </button>

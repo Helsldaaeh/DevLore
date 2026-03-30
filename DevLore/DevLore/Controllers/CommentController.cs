@@ -1,8 +1,10 @@
 using DevLore.Data;
+using DevLore.EntitiesLibrary.Entities.Common;
 using DevLore.EntitiesLibrary.Transfer.CommentTransferLogic;
 using DevLore.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevLore.Controllers
 {
@@ -16,9 +18,16 @@ namespace DevLore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CommentDTO>>> Get([FromQuery] List<int>? ids)
         {
-            var comments = (await DataEntityService.Get(((DataContext)DataEntityService.DataContext).Comments, ids))
-                .Select(x => x.ToDTO()).ToList();
-            return Ok(comments);
+            var context = (DataContext)DataEntityService.DataContext;
+            var query = context.Comments
+                .Include(c => c.User)
+                .AsQueryable();
+
+            if (ids?.Count > 0)
+                query = query.Where(c => ids.Contains(c.Id.GetValueOrDefault()));
+
+            var comments = await query.ToListAsync();
+            return Ok(comments.Select(c => c.ToDTO()));
         }
 
         [HttpPost]

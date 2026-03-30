@@ -23,11 +23,18 @@ export const fetchPosts = createAsyncThunk(
   }
 );
 
+export const searchPosts = createAsyncThunk(
+  'posts/searchPosts',
+  async ({ query, tag, userId }: { query?: string; tag?: string; userId?: number }) => {
+    const response = await postsApi.searchPosts(query, tag, userId);
+    return response;
+  }
+);
+
 export const addPost = createAsyncThunk(
   'posts/addPost',
   async (post: RequestPost, { dispatch }) => {
     await postsApi.createPost(post);
-    // После успешного создания перезагружаем список постов
     dispatch(fetchPosts());
     return post;
   }
@@ -35,16 +42,18 @@ export const addPost = createAsyncThunk(
 
 export const updatePost = createAsyncThunk(
   'posts/updatePost',
-  async (post: RequestPost) => {
+  async (post: RequestPost, { dispatch }) => {
     await postsApi.updatePost(post);
+    dispatch(fetchPosts());
     return post;
   }
 );
 
 export const deletePost = createAsyncThunk(
   'posts/deletePost',
-  async (ids: number[]) => {
+  async (ids: number[], { dispatch }) => {
     await postsApi.deletePosts(ids);
+    dispatch(fetchPosts());
     return ids;
   }
 );
@@ -52,7 +61,11 @@ export const deletePost = createAsyncThunk(
 const postsSlice = createSlice({
   name: 'posts',
   initialState,
-  reducers: {},
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchPosts.pending, (state) => {
@@ -67,10 +80,22 @@ const postsSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch posts';
       })
-      .addCase(deletePost.fulfilled, (state, action) => {
-        state.items = state.items.filter((post) => !action.payload.includes(post.id!));
+      .addCase(searchPosts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(searchPosts.fulfilled, (state, action: PayloadAction<Post[]>) => {
+        state.loading = false;
+        state.items = action.payload;
+      })
+      .addCase(searchPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Search failed';
+      })
+      .addCase(deletePost.fulfilled, () => {
       });
   },
 });
 
+export const { clearError } = postsSlice.actions;
 export default postsSlice.reducer;

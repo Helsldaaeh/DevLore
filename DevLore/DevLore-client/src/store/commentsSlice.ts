@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { Comment, RequestComment } from '../types';
 import * as commentsApi from '../api/comment';
+import type { RootState } from './store';
 
 interface CommentsState {
   items: Comment[];
@@ -24,16 +25,25 @@ export const fetchComments = createAsyncThunk(
 
 export const addComment = createAsyncThunk(
   'comments/addComment',
-  async (comment: RequestComment) => {
+  async (comment: RequestComment, { dispatch, getState }) => {
+    const state = getState() as RootState;
+    const currentUser = state.auth.user;
     await commentsApi.createComment(comment);
-    return comment;
+    // после добавления обновляем список комментариев
+    dispatch(fetchComments());
+    return {
+      ...comment,
+      username: currentUser?.username || 'Unknown',
+      createdAt: new Date().toISOString(),
+    } as Comment;
   }
 );
 
 export const deleteComment = createAsyncThunk(
   'comments/deleteComment',
-  async (ids: number[]) => {
+  async (ids: number[], { dispatch }) => {
     await commentsApi.deleteComments(ids);
+    dispatch(fetchComments());
     return ids;
   }
 );
@@ -54,9 +64,6 @@ const commentsSlice = createSlice({
       .addCase(fetchComments.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch comments';
-      })
-      .addCase(deleteComment.fulfilled, (state, action) => {
-        state.items = state.items.filter((c) => !action.payload.includes(c.id!));
       });
   },
 });

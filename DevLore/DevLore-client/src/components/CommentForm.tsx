@@ -7,24 +7,25 @@ interface Props {
   postId: number;
   parentCommentId?: number | null;
   userId: number;
+  onSuccess?: () => void;
 }
 
-const CommentForm: React.FC<Props> = ({ postId, parentCommentId, userId }) => {
+const CommentForm: React.FC<Props> = ({ postId, parentCommentId, userId, onSuccess }) => {
   const [content, setContent] = useState('');
   const dispatch = useDispatch<AppDispatch>();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
-    dispatch(
-      addComment({
-        userId,
-        postId,
-        parentCommentId: parentCommentId || null,
-        content,
-      })
-    );
-    setContent('');
+    dispatch(addComment({
+      userId,
+      postId,
+      parentCommentId: parentCommentId || null,
+      content,
+    })).then(() => {
+      setContent('');
+      onSuccess?.();
+    });
   };
 
   return (
@@ -35,9 +36,7 @@ const CommentForm: React.FC<Props> = ({ postId, parentCommentId, userId }) => {
         onChange={(e) => setContent(e.target.value)}
         placeholder="Write a comment..."
       />
-      <button type="submit" className="btn" style={{ marginTop: '6px' }}>
-        Comment
-      </button>
+      <button type="submit" className="btn" style={{ marginTop: '6px' }}>Comment</button>
     </form>
   );
 };

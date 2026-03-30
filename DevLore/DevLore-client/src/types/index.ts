@@ -15,20 +15,26 @@ export interface User {
   username: string;
   email: string;
   profile: string;
+  avatar?: string;            // URL аватара
   roleId: number;
   roleName?: string;
   createdAt?: string;
   updatedAt?: string;
+  followersCount?: number;
+  followingCount?: number;
+  isFollowing?: boolean;      // подписан ли текущий пользователь
 }
 
 export interface Post {
   id?: number;
   userId: number;
-  username: string; // добавляем
+  username: string;
   content: string;
   type: PostType;
   originalPostId?: number | null;
+  originalPost?: Post;
   tags?: string[];
+  media?: string[];           // массив URL прикреплённых файлов
   createdAt?: string;
   updatedAt?: string;
 }
@@ -73,6 +79,7 @@ export interface RequestPost {
   type: PostType;
   originalPostId?: number | null;
   tags?: string[];
+  media?: File[];             // для отправки файлов
 }
 
 export interface RequestComment {
@@ -104,4 +111,33 @@ export interface RequestUser {
   password: string;
   profile?: string;
   roleId?: number;
+}
+export interface Comment {
+  id?: number;
+  userId: number;
+  username: string;            // добавлено
+  postId: number;
+  parentCommentId?: number | null;
+  content: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+export interface Follow {
+  id?: number;
+  userId: number;
+  followedUserId: number;
+  followedAt: string;
+}
+
+// Для поддержки файлов расширяем RequestPost и Post
+export interface Post {
+  // ... существующие поля
+  mediaUrl?: string;          // ссылка на файл
+  mediaType?: 'image' | 'video' | 'file';
+}
+
+export interface RequestPost {
+  // ... существующие поля
+  mediaUrl?: string;
+  mediaType?: 'image' | 'video' | 'file';
 }

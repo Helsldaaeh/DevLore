@@ -1,4 +1,6 @@
-﻿namespace DevLore.EntitiesLibrary.Transfer.UserTransferLogic
+﻿using DevLore.EntitiesLibrary.Transfer;
+
+namespace DevLore.EntitiesLibrary.Transfer.UserTransferLogic
 {
     public record class UserDTO : IdentifiableEntityDTO
     {

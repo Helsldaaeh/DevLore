@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5218';
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export const apiClient = axios.create({
   baseURL,
@@ -9,7 +9,6 @@ export const apiClient = axios.create({
   },
 });
 
-// Интерцептор для добавления токена авторизации (если будет)
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -18,13 +17,13 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Интерцептор для обработки ошибок (опционально)
+// Больше никаких авторедиректов при 401
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // перенаправление на страницу логина
-      window.location.href = '/login';
+      localStorage.removeItem('token');
+      // редирект не делаем – пусть компонент сам обрабатывает
     }
     return Promise.reject(error);
   }

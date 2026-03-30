@@ -28,7 +28,7 @@ namespace DevLore.Controllers
         public async Task<IActionResult> Register(RegisterRequest request)
         {
             if (await _context.Users.AnyAsync(u => u.Email == request.Email))
-                return BadRequest("User with this email already exists");
+                return BadRequest(new { message = "User with this email already exists" });
 
             var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "User");
             if (defaultRole == null)
@@ -38,24 +38,32 @@ namespace DevLore.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            var roleId = request.RoleId ?? defaultRole.Id; // теперь явно int
-
-            var user = new User
+            try
             {
-                Username = request.Username,
-                Email = request.Email,
-                RoleId = roleId.Value, // без ошибки
-                Profile = ""
-            };
-            user.SetPassword(request.Password);
+                var user = new User
+                {
+                    Username = request.Username,
+                    Email = request.Email,
+                    RoleId = defaultRole.Id.Value, // <-- исправлено: добавлен .Value
+                    Profile = ""
+                };
+                user.SetPassword(request.Password);
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
 
-            var token = GenerateJwtToken(user);
-            var userDto = user.ToDTO();
-
-            return Ok(new AuthResponse { Token = token, User = userDto });
+                var token = GenerateJwtToken(user);
+                var userDto = user.ToDTO();
+                return Ok(new AuthResponse { Token = token, User = userDto });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Registration failed" });
+            }
         }
 
         [HttpPost("login")]
@@ -65,12 +73,27 @@ namespace DevLore.Controllers
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
             if (user == null || !user.VerifyPassword(request.Password))
-                return Unauthorized("Invalid email or password");
+                return Unauthorized(new { message = "Invalid email or password" });
 
             var token = GenerateJwtToken(user);
             var userDto = user.ToDTO();
-
             return Ok(new AuthResponse { Token = token, User = userDto });
+        }
+
+        [HttpGet("me")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized();
+
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Id == int.Parse(userIdClaim));
+            if (user == null)
+                return NotFound();
+
+            return Ok(user.ToDTO());
         }
 
         private string GenerateJwtToken(User user)

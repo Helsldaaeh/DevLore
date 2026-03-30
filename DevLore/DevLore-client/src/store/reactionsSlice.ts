@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { Reaction, RequestReaction } from '../types';
 import * as reactionsApi from '../api/reactions';
+import type { RootState } from './store';
 
 interface ReactionsState {
   items: Reaction[];
@@ -22,11 +23,38 @@ export const fetchReactions = createAsyncThunk(
   }
 );
 
+export const toggleReaction = createAsyncThunk(
+  'reactions/toggleReaction',
+  async (reaction: RequestReaction, { dispatch, getState }) => {
+    const state = getState() as RootState;
+    const existing = state.reactions.items.find(
+      r => r.userId === reaction.userId &&
+           (reaction.postId !== undefined ? r.postId === reaction.postId : r.commentId === reaction.commentId)
+    );
+
+    // Если существует и тип совпадает – удаляем
+    if (existing && existing.type === reaction.type) {
+      await reactionsApi.deleteReactions([existing.id!]);
+    } 
+    // Если существует, но тип другой – удаляем старую и добавляем новую
+    else if (existing && existing.type !== reaction.type) {
+      await reactionsApi.deleteReactions([existing.id!]);
+      await reactionsApi.createReaction(reaction);
+    }
+    // Если не существует – добавляем
+    else {
+      await reactionsApi.createReaction(reaction);
+    }
+
+    dispatch(fetchReactions());
+    return reaction;
+  }
+);
+
 export const addReaction = createAsyncThunk(
   'reactions/addReaction',
   async (reaction: RequestReaction, { dispatch }) => {
     await reactionsApi.createReaction(reaction);
-    // После добавления реакции обновляем список
     dispatch(fetchReactions());
     return reaction;
   }
@@ -34,8 +62,9 @@ export const addReaction = createAsyncThunk(
 
 export const deleteReaction = createAsyncThunk(
   'reactions/deleteReaction',
-  async (ids: number[]) => {
+  async (ids: number[], { dispatch }) => {
     await reactionsApi.deleteReactions(ids);
+    dispatch(fetchReactions());
     return ids;
   }
 );
@@ -56,9 +85,6 @@ const reactionsSlice = createSlice({
       .addCase(fetchReactions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch reactions';
-      })
-      .addCase(deleteReaction.fulfilled, (state, action) => {
-        state.items = state.items.filter((r) => !action.payload.includes(r.id!));
       });
   },
 });

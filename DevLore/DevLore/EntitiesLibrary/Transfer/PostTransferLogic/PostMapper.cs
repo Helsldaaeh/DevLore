@@ -19,7 +19,7 @@ namespace DevLore.EntitiesLibrary.Transfer.PostTransferLogic
             UpdatedAt = entity.UpdatedAt,
             Id = entity.Id,
             UserId = entity.UserId,
-            Username = entity.User?.Username ?? "Unknown", // добавили
+            Username = entity.User?.Username ?? "Unknown",
             Content = entity.Content,
             Type = entity.Type,
             OriginalPostId = entity.OriginalPostId,

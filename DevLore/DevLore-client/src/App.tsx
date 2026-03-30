@@ -1,13 +1,17 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import type { RootState } from './store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState, AppDispatch } from './store/store';
+import { fetchCurrentUser } from './store/authSlice';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Feed from './pages/Feed';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
-import Search from './pages/Search';
+import SearchPage from './pages/Search';
+import CreatePost from './pages/CreatePost';
+import EditPost from './pages/EditPost';               // импорт страницы редактирования
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = useSelector((state: RootState) => state.auth.token);
@@ -15,6 +19,16 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 };
 
 function App() {
+  const dispatch = useDispatch<AppDispatch>();
+  const token = useSelector((state: RootState) => state.auth.token);
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  useEffect(() => {
+    if (token && !user) {
+      dispatch(fetchCurrentUser());
+    }
+  }, [token, user, dispatch]);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -49,7 +63,24 @@ function App() {
           path="/search"
           element={
             <PrivateRoute>
-              <Search />
+              <SearchPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/create-post"
+          element={
+            <PrivateRoute>
+              <CreatePost />
+            </PrivateRoute>
+          }
+        />
+        {/* Новый маршрут для редактирования поста */}
+        <Route
+          path="/edit-post/:id"
+          element={
+            <PrivateRoute>
+              <EditPost />
             </PrivateRoute>
           }
         />

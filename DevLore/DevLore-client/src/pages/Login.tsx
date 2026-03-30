@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../store/authSlice';
+import { login, clearError } from '../store/authSlice';
 import type { AppDispatch, RootState } from '../store/store';
 
 const Login: React.FC = () => {
@@ -19,11 +19,20 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleClearError = () => {
+    dispatch(clearError());
+  };
+
   return (
     <div className="container" style={{ maxWidth: '400px', margin: '100px auto' }}>
       <div className="card">
         <h2>Login</h2>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && (
+          <div className="error-message">
+            <p>{error}</p>
+            <button onClick={handleClearError}>✖</button>
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>

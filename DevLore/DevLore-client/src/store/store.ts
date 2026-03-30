@@ -4,6 +4,7 @@ import commentsReducer from './commentsSlice';
 import reactionsReducer from './reactionsSlice';
 import authReducer from './authSlice';
 import usersReducer from './usersSlice';
+import followsReducer from './followSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     comments: commentsReducer,
     reactions: reactionsReducer,
     auth: authReducer,
+    follows: followsReducer,
     users: usersReducer,
   },
 });
