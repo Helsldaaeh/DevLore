@@ -78,7 +78,7 @@ const Post: React.FC<Props> = ({ post, onDelete, currentUserId }) => {
 
       <div className="post-actions" style={{ display: 'flex', gap: '12px' }}>
         <ReactionButtons targetId={post.id!} targetType="post" />
-        <button className="btn" onClick={handleRepost}>🔄 Repost</button>
+        <button className="btn" onClick={handleRepost}>Repost</button>
       </div>
 
       {showRepostForm && currentUserId && (
