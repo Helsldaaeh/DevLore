@@ -29,14 +29,17 @@ const CommentForm: React.FC<Props> = ({ postId, parentCommentId, userId, onSucce
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: '12px' }}>
-      <input
-        type="text"
+    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'flex-start' }}>
+      <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="Write a comment..."
+        rows={1}
+        style={{ flex: 1, resize: 'vertical', minHeight: '38px' }}
       />
-      <button type="submit" className="btn" style={{ marginTop: '6px' }}>Comment</button>
+      <button type="submit" className="btn" style={{ padding: '8px 12px', height: '38px' }}>
+        ➤
+      </button>
     </form>
   );
 };

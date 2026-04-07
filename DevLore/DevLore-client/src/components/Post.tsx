@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../store/store';
 import type { Post as PostType } from '../types';
 import ReactionButtons from './ReactionButtons';
 import CommentList from './CommentList';
@@ -14,18 +16,23 @@ interface Props {
 const Post: React.FC<Props> = ({ post, onDelete, currentUserId }) => {
   const navigate = useNavigate();
   const [showRepostForm, setShowRepostForm] = useState(false);
+  const [showComments, setShowComments] = useState(false); // по умолчанию скрыты
   const isOwner = currentUserId === post.userId;
+
+  // Получаем комментарии из Redux и считаем количество для этого поста
+  const comments = useSelector((state: RootState) => state.comments.items);
+  const commentsCount = comments.filter(c => c.postId === post.id).length;
 
   const handleEdit = () => navigate(`/edit-post/${post.id}`);
   const handleRepost = () => setShowRepostForm(!showRepostForm);
   const goToProfile = () => navigate(`/profile/${post.userId}`);
+  const toggleComments = () => setShowComments(!showComments);
 
   return (
     <div className="post">
       <div className="post-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {/* Аватар (если есть) – можно добавить позже */}
-          <button className="btn" onClick={goToProfile} style={{ fontWeight: 'bold' }}>
+          <button className="btn" onClick={goToProfile} style={{ fontWeight: 'bold', background: 'none', padding: 0 }}>
             {post.username}
           </button>
         </div>
@@ -40,29 +47,28 @@ const Post: React.FC<Props> = ({ post, onDelete, currentUserId }) => {
       </div>
 
       {post.originalPost && (
-        <div className="original-post" style={{ borderLeft: '3px solid #ccc', paddingLeft: '12px', marginBottom: '12px' }}>
-          <strong>{post.originalPost.username}</strong>
-          <div className="post-content">{post.originalPost.content}</div>
+        <div
+          className="original-post"
+          onClick={() => navigate(`/post/${post.originalPost?.id}`)}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="original-post-header" style={{ marginBottom: '8px' }}>
+            <button
+              className="btn"
+              onClick={(e) => { e.stopPropagation(); navigate(`/profile/${post.originalPost?.userId}`); }}
+              style={{ fontWeight: 'bold', background: 'none', padding: 0 }}
+            >
+              <strong>{post.originalPost.username}</strong>
+            </button>
+            <span> reposted:</span>
+          </div>
+          <div className="original-post-content" style={{ opacity: 0.8 }}>
+            {post.originalPost.content}
+          </div>
         </div>
       )}
 
-      <div className="post-content">
-        {post.content || (post.originalPost ? 'Reposted' : '')}
-      </div>
-
-      {post.media && post.media.length > 0 && (
-        <div className="post-media" style={{ margin: '12px 0' }}>
-          {post.media.map((url, idx) => {
-            if (url.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
-              return <img key={idx} src={url} alt="media" style={{ maxWidth: '100%', borderRadius: '12px' }} />;
-            } else if (url.match(/\.(mp4|webm|ogg)$/i)) {
-              return <video key={idx} src={url} controls style={{ maxWidth: '100%' }} />;
-            } else {
-              return <a key={idx} href={url} target="_blank" rel="noopener noreferrer">📎 Download</a>;
-            }
-          })}
-        </div>
-      )}
+      <div className="post-content">{post.content}</div>
 
       {post.tags && post.tags.length > 0 && (
         <div className="post-tags">
@@ -76,16 +82,19 @@ const Post: React.FC<Props> = ({ post, onDelete, currentUserId }) => {
         <span>{new Date(post.createdAt!).toLocaleString()}</span>
       </div>
 
-      <div className="post-actions" style={{ display: 'flex', gap: '12px' }}>
+      <div className="post-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
         <ReactionButtons targetId={post.id!} targetType="post" />
-        <button className="btn" onClick={handleRepost}>Repost</button>
+        <button className="btn" onClick={handleRepost}>🔄 Repost</button>
+        <button className="btn" onClick={toggleComments}>
+          💬 Comments ({commentsCount})
+        </button>
       </div>
 
       {showRepostForm && currentUserId && (
         <RepostForm originalPostId={post.id!} userId={currentUserId} onCancel={() => setShowRepostForm(false)} />
       )}
 
-      <CommentList postId={post.id!} />
+      {showComments && <CommentList postId={post.id!} />}
     </div>
   );
 };

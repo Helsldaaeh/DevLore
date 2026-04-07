@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../store/usersSlice';
-import { fetchPosts } from '../store/postsSlice';
+import { fetchPosts, deletePost } from '../store/postsSlice';
 import type { RootState, AppDispatch } from '../store/store';
 import Post from '../components/Post';
 import { logout } from '../store/authSlice';
@@ -28,6 +28,10 @@ const Profile: React.FC = () => {
     }
     dispatch(fetchPosts());
   }, [dispatch, userId, currentUser]);
+
+  const handleDelete = (id: number) => {
+    dispatch(deletePost([id]));
+  };
 
   const userPosts = allPosts.filter((p) => p.userId === (user?.id || currentUser?.id)).slice(0, visiblePosts);
   const hasMore = allPosts.filter((p) => p.userId === (user?.id || currentUser?.id)).length > visiblePosts;
@@ -62,7 +66,12 @@ const Profile: React.FC = () => {
       <h2>Posts</h2>
       {userPosts.length === 0 && <p>No posts yet.</p>}
       {userPosts.map((post) => (
-        <Post key={post.id} post={post} currentUserId={currentUser?.id} />
+        <Post
+          key={post.id}
+          post={post}
+          onDelete={handleDelete}
+          currentUserId={currentUser?.id}
+        />
       ))}
       {hasMore && (
         <button className="btn btn-primary" onClick={loadMore}>

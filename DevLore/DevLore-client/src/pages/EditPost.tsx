@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchPosts, updatePost } from '../store/postsSlice';
+import { updatePost, fetchPosts } from '../store/postsSlice';
 import type { AppDispatch, RootState } from '../store/store';
 import { logout } from '../store/authSlice';
 
@@ -19,15 +19,12 @@ const EditPost: React.FC = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      // Если пост уже есть в сторе, сразу отображаем
       if (post) {
         setContent(post.content);
         setTags(post.tags?.join(', ') || '');
         setLoading(false);
         return;
       }
-
-      // Если поста нет, но есть пользователь – загружаем все посты и находим нужный
       if (user) {
         const fetched = await dispatch(fetchPosts()).unwrap();
         const foundPost = fetched.find(p => p.id === Number(id));
@@ -38,9 +35,8 @@ const EditPost: React.FC = () => {
       }
       setLoading(false);
     };
-
     loadData();
-  }, [id, user, dispatch, post]); // post в зависимостях, но мы внутри проверяем его наличие
+  }, [id, user, dispatch, post]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +47,7 @@ const EditPost: React.FC = () => {
       content,
       type: post.type,
       tags: tags.split(',').map(t => t.trim()).filter(Boolean),
-    })).then(() => navigate(-1));
+    })).then(() => navigate('/feed'));
   };
 
   const handleLogout = () => {

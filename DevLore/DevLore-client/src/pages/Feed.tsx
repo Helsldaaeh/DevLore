@@ -19,7 +19,6 @@ const Feed: React.FC = () => {
     return saved === 'true';
   });
 
-  // Следим за изменениями в localStorage (например, из настроек)
   useEffect(() => {
     const handleStorageChange = () => {
       const saved = localStorage.getItem('autoPaginate');

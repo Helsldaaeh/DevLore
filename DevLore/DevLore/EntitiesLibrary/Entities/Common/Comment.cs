@@ -32,7 +32,7 @@ namespace DevLore.EntitiesLibrary.Entities.Common
                 builder.HasOne(c => c.ParentComment)
                     .WithMany(c => c.Replies)
                     .HasForeignKey(c => c.ParentCommentId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);   // изменено с Restrict на Cascade
 
                 builder.HasIndex(c => c.UserId);
                 builder.HasIndex(c => c.PostId);

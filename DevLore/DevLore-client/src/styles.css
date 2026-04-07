@@ -221,6 +221,9 @@ textarea {
 .comment-content {
   margin-bottom: 12px;
   font-size: 0.95rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 /* ===== РЕАКЦИИ ===== */
@@ -362,4 +365,17 @@ textarea {
   border-radius: 12px;
   padding: 12px;
   margin: 8px 0;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.btn-link:hover {
+  text-decoration: none;
 }

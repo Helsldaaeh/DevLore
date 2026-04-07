@@ -11,19 +11,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
     .AddEnvironmentVariables();
 
-// Добавляем CORS ДО вызова builder.Build()
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:5174")
+        policy.WithOrigins("http://localhost:5173", "http://localhost:8081")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers();  // убрали лишнее
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
@@ -52,7 +52,8 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionHandler>();
 app.UseSwagger();
 app.UseSwaggerUI();
-app.UseCors(); // Используем CORS после builder.Build()
+app.UseRouting();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

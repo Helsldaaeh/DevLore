@@ -91,8 +91,6 @@ const postsSlice = createSlice({
       .addCase(searchPosts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Search failed';
-      })
-      .addCase(deletePost.fulfilled, () => {
       });
   },
 });

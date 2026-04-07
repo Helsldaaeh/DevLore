@@ -16,7 +16,6 @@ const RepostForm: React.FC<Props> = ({ originalPostId, userId, onCancel }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
     dispatch(addPost({
       userId,
       content,

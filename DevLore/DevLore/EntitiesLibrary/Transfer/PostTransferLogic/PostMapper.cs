@@ -23,6 +23,7 @@ namespace DevLore.EntitiesLibrary.Transfer.PostTransferLogic
             Content = entity.Content,
             Type = entity.Type,
             OriginalPostId = entity.OriginalPostId,
+            OriginalPost = entity.OriginalPost?.ToDTO(),   // рекурсивное преобразование
             Tags = entity.Tags?.Select(t => t.Name).ToList()
         };
     }

@@ -11,7 +11,8 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import SearchPage from './pages/Search';
 import CreatePost from './pages/CreatePost';
-import EditPost from './pages/EditPost';               // импорт страницы редактирования
+import EditPost from './pages/EditPost';
+import PostDetail from './pages/PostDetail'; // новая страница для отдельного поста
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = useSelector((state: RootState) => state.auth.token);
@@ -75,12 +76,19 @@ function App() {
             </PrivateRoute>
           }
         />
-        {/* Новый маршрут для редактирования поста */}
         <Route
           path="/edit-post/:id"
           element={
             <PrivateRoute>
               <EditPost />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/post/:id"
+          element={
+            <PrivateRoute>
+              <PostDetail />
             </PrivateRoute>
           }
         />

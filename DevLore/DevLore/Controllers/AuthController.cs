@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DevLore.Controllers
 {
@@ -27,8 +28,33 @@ namespace DevLore.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
+            // Валидация полей
+            if (string.IsNullOrWhiteSpace(request.Username))
+                return BadRequest(new { message = "Username is required." });
+            if (request.Username.Length < 3)
+                return BadRequest(new { message = "Username must be at least 3 characters long." });
+            if (request.Username.Length > 32)
+                return BadRequest(new { message = "Username must not exceed 50 characters." });
+
+            if (string.IsNullOrWhiteSpace(request.Email))
+                return BadRequest(new { message = "Email is required." });
+            if (!IsValidEmail(request.Email))
+                return BadRequest(new { message = "Invalid email format." });
+            if (request.Email.Length > 256)
+                return BadRequest(new { message = "Email must not exceed 256 characters." });
+
+            if (string.IsNullOrWhiteSpace(request.Password))
+                return BadRequest(new { message = "Password is required." });
+            if (request.Password.Length < 8)
+                return BadRequest(new { message = "Password must be at least 8 characters long." });
+            if (request.Password.Length > 100)
+                return BadRequest(new { message = "Password must not exceed 100 characters." });
+
+            // Проверка уникальности email и username
             if (await _context.Users.AnyAsync(u => u.Email == request.Email))
-                return BadRequest(new { message = "User with this email already exists" });
+                return BadRequest(new { message = "User with this email already exists." });
+            if (await _context.Users.AnyAsync(u => u.Username == request.Username))
+                return BadRequest(new { message = "User with this username already exists." });
 
             var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "User");
             if (defaultRole == null)
@@ -38,13 +64,15 @@ namespace DevLore.Controllers
                 await _context.SaveChangesAsync();
             }
 
+            var roleId = defaultRole.Id ?? throw new Exception("Role Id is null");
+
             try
             {
                 var user = new User
                 {
                     Username = request.Username,
                     Email = request.Email,
-                    RoleId = defaultRole.Id.Value, // <-- исправлено: добавлен .Value
+                    RoleId = roleId,
                     Profile = ""
                 };
                 user.SetPassword(request.Password);
@@ -62,18 +90,23 @@ namespace DevLore.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, new { message = "Registration failed" });
+                return StatusCode(500, new { message = "Registration failed due to internal error." });
             }
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
+            if (string.IsNullOrWhiteSpace(request.Email))
+                return BadRequest(new { message = "Email is required." });
+            if (string.IsNullOrWhiteSpace(request.Password))
+                return BadRequest(new { message = "Password is required." });
+
             var user = await _context.Users
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
             if (user == null || !user.VerifyPassword(request.Password))
-                return Unauthorized(new { message = "Invalid email or password" });
+                return Unauthorized(new { message = "Invalid email or password." });
 
             var token = GenerateJwtToken(user);
             var userDto = user.ToDTO();
@@ -116,6 +149,21 @@ namespace DevLore.Controllers
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+            try
+            {
+                // Простая проверка формата
+                return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

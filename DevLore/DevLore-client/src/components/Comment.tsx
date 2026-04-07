@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Comment as CommentType } from '../types';
 import ReactionButtons from './ReactionButtons';
 import CommentForm from './CommentForm';
@@ -11,13 +12,20 @@ interface Props {
 }
 
 const Comment: React.FC<Props> = ({ comment, onDelete, currentUserId, postId }) => {
+  const navigate = useNavigate();
   const [showReplyForm, setShowReplyForm] = useState(false);
   const isOwner = currentUserId === comment.userId;
+
+  const goToProfile = () => {
+    navigate(`/profile/${comment.userId}`);
+  };
 
   return (
     <div className="comment">
       <div className="comment-header">
-        <strong>{comment.username || `User ${comment.userId}`}</strong>
+        <button className="btn" onClick={goToProfile} style={{ fontWeight: 'bold', background: 'none', padding: 0 }}>
+          <strong>{comment.username || `User ${comment.userId}`}</strong>
+        </button>
         <small>{new Date(comment.createdAt!).toLocaleString()}</small>
         {isOwner && onDelete && (
           <button className="btn btn-danger" onClick={() => onDelete(comment.id!)}>Delete</button>

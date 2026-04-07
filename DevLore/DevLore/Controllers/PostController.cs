@@ -16,7 +16,10 @@ namespace DevLore.Controllers
         private PostService DataEntityService { get; } = dataEntityService;
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PostDTO>>> Get([FromQuery] List<int>? ids)
+        public async Task<ActionResult<IEnumerable<PostDTO>>> Get(
+            [FromQuery] List<int>? ids,
+            [FromQuery] int skip = 0,
+            [FromQuery] int take = 20)
         {
             var context = (DataContext)DataEntityService.DataContext;
             var query = context.Posts
@@ -29,7 +32,41 @@ namespace DevLore.Controllers
             if (ids?.Count > 0)
                 query = query.Where(p => ids.Contains(p.Id.GetValueOrDefault()));
 
-            var posts = await query.ToListAsync();
+            var posts = await query
+                .OrderByDescending(p => p.CreatedAt)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+            return Ok(posts.Select(p => p.ToDTO()));
+        }
+
+        [HttpGet("feed")]
+        public async Task<ActionResult<IEnumerable<PostDTO>>> GetFeed(
+            [FromQuery] int skip = 0,
+            [FromQuery] int take = 20)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var currentUserId))
+                return Unauthorized();
+
+            var context = (DataContext)DataEntityService.DataContext;
+            var followingIds = await context.Follows
+                .Where(f => f.UserId == currentUserId)
+                .Select(f => f.FollowedUserId)
+                .ToListAsync();
+
+            var query = context.Posts
+                .Include(p => p.User)
+                .Include(p => p.Tags)
+                .Include(p => p.OriginalPost)
+                    .ThenInclude(op => op.User)
+                .Where(p => followingIds.Contains(p.UserId))
+                .OrderByDescending(p => p.CreatedAt);
+
+            var posts = await query
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
             return Ok(posts.Select(p => p.ToDTO()));
         }
 
@@ -37,7 +74,9 @@ namespace DevLore.Controllers
         public async Task<ActionResult<IEnumerable<PostDTO>>> Search(
             [FromQuery] string? query,
             [FromQuery] string? tags,
-            [FromQuery] int? userId)
+            [FromQuery] int? userId,
+            [FromQuery] int skip = 0,
+            [FromQuery] int take = 20)
         {
             var context = (DataContext)DataEntityService.DataContext;
             var postsQuery = context.Posts
@@ -59,7 +98,11 @@ namespace DevLore.Controllers
             if (userId.HasValue)
                 postsQuery = postsQuery.Where(p => p.UserId == userId.Value);
 
-            var posts = await postsQuery.ToListAsync();
+            var posts = await postsQuery
+                .OrderByDescending(p => p.CreatedAt)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
             return Ok(posts.Select(p => p.ToDTO()));
         }
 
@@ -122,34 +165,12 @@ namespace DevLore.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete([FromBody] List<int> ids)
         {
-            var status = await DataEntityService.Remove(
-                ((DataContext)DataEntityService.DataContext).Posts, ids);
+            var context = (DataContext)DataEntityService.DataContext;
+            var postsToDelete = await context.Posts.Where(p => ids.Contains(p.Id.GetValueOrDefault())).ToListAsync();
+            context.Posts.RemoveRange(postsToDelete);
+            var status = await context.SaveChangesAsync() > 0;
             if (!status) return BadRequest("No posts were deleted!");
             return Ok();
-        }
-
-        [HttpGet("feed")]
-        public async Task<ActionResult<IEnumerable<PostDTO>>> GetFeed()
-        {
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(userIdClaim, out var currentUserId))
-                return Unauthorized();
-
-            var context = (DataContext)DataEntityService.DataContext;
-            var followingIds = await context.Follows
-                .Where(f => f.UserId == currentUserId)
-                .Select(f => f.FollowedUserId)
-                .ToListAsync();
-
-            var query = context.Posts
-                .Include(p => p.User)
-                .Include(p => p.Tags)
-                .Where(p => followingIds.Contains(p.UserId))
-                .OrderByDescending(p => p.CreatedAt)
-                .AsQueryable();
-
-            var posts = await query.ToListAsync();
-            return Ok(posts.Select(p => p.ToDTO()));
         }
     }
 }
