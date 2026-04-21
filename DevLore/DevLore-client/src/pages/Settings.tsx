@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../store/authSlice';
 import type { AppDispatch } from '../store/store';
+import { IoHomeOutline, IoPersonOutline, IoCreateOutline, IoSearchOutline, IoLogOutOutline, IoSunnyOutline, IoMoonOutline } from 'react-icons/io5';
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
@@ -17,27 +18,52 @@ const Settings: React.FC = () => {
     return saved === 'true';
   });
 
+  const [isDarkTheme, setIsDarkTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark-theme');
+      return true;
+    } else {
+      document.documentElement.classList.remove('dark-theme');
+      return false;
+    }
+  });
+
   useEffect(() => {
     localStorage.setItem('autoPaginate', String(autoLoad));
   }, [autoLoad]);
+
+  useEffect(() => {
+    localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+    if (isDarkTheme) {
+      document.documentElement.classList.add('dark-theme');
+    } else {
+      document.documentElement.classList.remove('dark-theme');
+    }
+  }, [isDarkTheme]);
 
   const handleLogout = () => {
     dispatch(logout());
     navigate('/');
   };
 
+  const toggleTheme = () => {
+    setIsDarkTheme(prev => !prev);
+  };
+
   return (
     <div className="container">
       <nav className="navbar">
-        <button onClick={() => navigate('/feed')}>🏠 Home</button>
-        <button onClick={() => navigate('/profile/me')}>👤 Profile</button>
-        <button onClick={() => navigate('/create-post')}>✏️ Create Post</button>
-        <button onClick={() => navigate('/search')}>🔍 Search</button>
-        <button onClick={handleLogout}>🚪 Logout</button>
+        <button onClick={() => navigate('/feed')}><IoHomeOutline /> Home</button>
+        <button onClick={() => navigate('/profile/me')}><IoPersonOutline /> Profile</button>
+        <button onClick={() => navigate('/create-post')}><IoCreateOutline /> Create Post</button>
+        <button onClick={() => navigate('/search')}><IoSearchOutline /> Search</button>
+        <button onClick={handleLogout}><IoLogOutOutline /> Logout</button>
       </nav>
 
       <div className="card">
         <h1>Settings</h1>
+
         <div className="form-group">
           <label className="checkbox-label">
             <input
@@ -45,7 +71,20 @@ const Settings: React.FC = () => {
               checked={autoLoad}
               onChange={(e) => setAutoLoad(e.target.checked)}
             />
-            <span>  - Enable infinite scroll (auto load more posts)</span>
+            <span>Enable infinite scroll (auto load more posts)</span>
+          </label>
+        </div>
+
+        <div className="form-group">
+          <label className="theme-toggle-label">
+            <span>Theme:</span>
+            <button
+              className="theme-toggle-btn"
+              onClick={toggleTheme}
+              aria-label="Switch theme"
+            >
+              {isDarkTheme ? <IoSunnyOutline /> : <IoMoonOutline />}
+            </button>
           </label>
         </div>
       </div>

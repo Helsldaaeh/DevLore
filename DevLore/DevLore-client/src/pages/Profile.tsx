@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../store/usersSlice';
-import { fetchPosts, deletePost } from '../store/postsSlice';
+import { fetchPosts } from '../store/postsSlice';
 import type { RootState, AppDispatch } from '../store/store';
 import Post from '../components/Post';
 import { logout } from '../store/authSlice';
+import { IoHomeOutline, IoPersonOutline, IoCreateOutline, IoSettingsOutline, IoSearchOutline, IoLogOutOutline } from 'react-icons/io5';
 
 const Profile: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -29,10 +30,6 @@ const Profile: React.FC = () => {
     dispatch(fetchPosts());
   }, [dispatch, userId, currentUser]);
 
-  const handleDelete = (id: number) => {
-    dispatch(deletePost([id]));
-  };
-
   const userPosts = allPosts.filter((p) => p.userId === (user?.id || currentUser?.id)).slice(0, visiblePosts);
   const hasMore = allPosts.filter((p) => p.userId === (user?.id || currentUser?.id)).length > visiblePosts;
 
@@ -50,11 +47,12 @@ const Profile: React.FC = () => {
   return (
     <div className="container">
       <nav className="navbar">
-        <button onClick={() => navigate('/feed')}>🏠 Home</button>
-        <button onClick={() => navigate('/create-post')}>✏️ Create Post</button>
-        <button onClick={() => navigate('/settings')}>⚙️ Settings</button>
-        <button onClick={() => navigate('/search')}>🔍 Search</button>
-        <button onClick={handleLogout}>🚪 Logout</button>
+        <button onClick={() => navigate('/feed')}><IoHomeOutline /> Home</button>
+        <button onClick={() => navigate('/profile/me')}><IoPersonOutline /> My Profile</button>
+        <button onClick={() => navigate('/create-post')}><IoCreateOutline /> Create Post</button>
+        <button onClick={() => navigate('/settings')}><IoSettingsOutline /> Settings</button>
+        <button onClick={() => navigate('/search')}><IoSearchOutline /> Search</button>
+        <button onClick={handleLogout}><IoLogOutOutline /> Logout</button>
       </nav>
 
       <div className="card profile-header">
@@ -66,12 +64,7 @@ const Profile: React.FC = () => {
       <h2>Posts</h2>
       {userPosts.length === 0 && <p>No posts yet.</p>}
       {userPosts.map((post) => (
-        <Post
-          key={post.id}
-          post={post}
-          onDelete={handleDelete}
-          currentUserId={currentUser?.id}
-        />
+        <Post key={post.id} post={post} currentUserId={currentUser?.id} />
       ))}
       {hasMore && (
         <button className="btn btn-primary" onClick={loadMore}>

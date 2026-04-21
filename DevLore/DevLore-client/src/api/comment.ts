@@ -12,7 +12,7 @@ export const createComment = async (comment: RequestComment): Promise<void> => {
 };
 
 export const updateComment = async (comment: RequestComment): Promise<void> => {
-  await apiClient.post('/api/comment', [comment]);
+  await apiClient.put(`/api/comment/${comment.id}`, comment);
 };
 
 export const deleteComments = async (ids: number[]): Promise<void> => {

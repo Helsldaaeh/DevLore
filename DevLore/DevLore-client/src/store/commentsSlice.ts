@@ -29,13 +29,21 @@ export const addComment = createAsyncThunk(
     const state = getState() as RootState;
     const currentUser = state.auth.user;
     await commentsApi.createComment(comment);
-    // после добавления обновляем список комментариев
     dispatch(fetchComments());
     return {
       ...comment,
       username: currentUser?.username || 'Unknown',
       createdAt: new Date().toISOString(),
     } as Comment;
+  }
+);
+
+export const updateComment = createAsyncThunk(
+  'comments/updateComment',
+  async (comment: RequestComment, { dispatch }) => {
+    await commentsApi.updateComment(comment);
+    dispatch(fetchComments());
+    return comment;
   }
 );
 

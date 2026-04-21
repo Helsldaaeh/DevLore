@@ -5,6 +5,7 @@ import { searchPosts, clearError } from '../store/postsSlice';
 import type { RootState, AppDispatch } from '../store/store';
 import Post from '../components/Post';
 import { logout } from '../store/authSlice';
+import { IoHomeOutline, IoPersonOutline, IoCreateOutline, IoSettingsOutline, IoSearchOutline, IoLogOutOutline } from 'react-icons/io5';
 
 const SearchPage: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -16,10 +17,9 @@ const SearchPage: React.FC = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Передаём оба параметра, бэкенд должен уметь их комбинировать (OR)
     dispatch(searchPosts({
       query: query.trim() || undefined,
-      tag: tags.trim() || undefined, // здесь tag – это строка, бэкенд может ожидать один тег, но для нескольких нужно расширить.
+      tag: tags.trim() || undefined,
     }));
   };
 
@@ -31,11 +31,11 @@ const SearchPage: React.FC = () => {
   return (
     <div className="container">
       <nav className="navbar">
-        <button onClick={() => navigate('/feed')}>🏠 Home</button>
-        <button onClick={() => navigate('/profile/' + user?.id)}>👤 Profile</button>
-        <button onClick={() => navigate('/create-post')}>✏️ Create Post</button>
-        <button onClick={() => navigate('/settings')}>⚙️ Settings</button>
-        <button onClick={handleLogout}>🚪 Logout</button>
+        <button onClick={() => navigate('/feed')}><IoHomeOutline /> Home</button>
+        <button onClick={() => navigate('/profile/' + user?.id)}><IoPersonOutline /> Profile</button>
+        <button onClick={() => navigate('/create-post')}><IoCreateOutline /> Create Post</button>
+        <button onClick={() => navigate('/settings')}><IoSettingsOutline /> Settings</button>
+        <button onClick={handleLogout}><IoLogOutOutline /> Logout</button>
       </nav>
 
       <h1>Search</h1>
@@ -59,7 +59,9 @@ const SearchPage: React.FC = () => {
               onChange={(e) => setTags(e.target.value)}
             />
           </div>
-          <button type="submit" className="btn btn-primary">Search</button>
+          <button type="submit" className="btn btn-primary">
+            <IoSearchOutline /> Search
+          </button>
         </form>
       </div>
 

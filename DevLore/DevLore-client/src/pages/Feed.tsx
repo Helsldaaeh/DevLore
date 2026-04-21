@@ -5,6 +5,7 @@ import { fetchPosts, deletePost } from '../store/postsSlice';
 import { logout } from '../store/authSlice';
 import type { RootState, AppDispatch } from '../store/store';
 import Post from '../components/Post';
+import { IoHomeOutline, IoPersonOutline, IoCreateOutline, IoSettingsOutline, IoSearchOutline, IoLogOutOutline } from 'react-icons/io5';
 
 const Feed: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -71,11 +72,12 @@ const Feed: React.FC = () => {
   return (
     <div className="container">
       <nav className="navbar">
-        <button onClick={() => navigate('/profile/' + user.id)}>👤 Profile</button>
-        <button onClick={() => navigate('/create-post')}>✏️ Create Post</button>
-        <button onClick={() => navigate('/settings')}>⚙️ Settings</button>
-        <button onClick={() => navigate('/search')}>🔍 Search</button>
-        <button onClick={handleLogout}>🚪 Logout</button>
+        <button onClick={() => navigate('/feed')}><IoHomeOutline /> Home</button>
+        <button onClick={() => navigate('/profile/' + user.id)}><IoPersonOutline /> Profile</button>
+        <button onClick={() => navigate('/create-post')}><IoCreateOutline /> Create Post</button>
+        <button onClick={() => navigate('/settings')}><IoSettingsOutline /> Settings</button>
+        <button onClick={() => navigate('/search')}><IoSearchOutline /> Search</button>
+        <button onClick={handleLogout}><IoLogOutOutline /> Logout</button>
       </nav>
 
       <h1>Feed</h1>

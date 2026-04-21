@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { updatePost, fetchPosts } from '../store/postsSlice';
 import type { AppDispatch, RootState } from '../store/store';
 import { logout } from '../store/authSlice';
+import { IoHomeOutline, IoPersonOutline, IoSettingsOutline, IoSearchOutline, IoLogOutOutline } from 'react-icons/io5';
 
 const EditPost: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -61,12 +62,11 @@ const EditPost: React.FC = () => {
   return (
     <div className="container">
       <nav className="navbar">
-        <button onClick={() => navigate('/feed')}>🏠 Home</button>
-        <button onClick={() => navigate('/profile/' + user?.id)}>👤 Profile</button>
-        <button onClick={() => navigate('/create-post')}>✏️ Create Post</button>
-        <button onClick={() => navigate('/settings')}>⚙️ Settings</button>
-        <button onClick={() => navigate('/search')}>🔍 Search</button>
-        <button onClick={handleLogout}>🚪 Logout</button>
+        <button onClick={() => navigate('/feed')}><IoHomeOutline /> Home</button>
+        <button onClick={() => navigate('/profile/' + user?.id)}><IoPersonOutline /> Profile</button>
+        <button onClick={() => navigate('/settings')}><IoSettingsOutline /> Settings</button>
+        <button onClick={() => navigate('/search')}><IoSearchOutline /> Search</button>
+        <button onClick={handleLogout}><IoLogOutOutline /> Logout</button>
       </nav>
 
       <h1>Edit Post</h1>

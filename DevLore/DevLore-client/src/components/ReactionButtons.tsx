@@ -4,6 +4,7 @@ import { fetchReactions, toggleReaction } from '../store/reactionsSlice';
 import type { RootState } from '../store/store';
 import { ReactionType } from '../types';
 import type { AppDispatch } from '../store/store';
+import { IoThumbsUpOutline, IoThumbsDownOutline } from 'react-icons/io5';
 
 interface Props {
   targetId: number;
@@ -46,20 +47,20 @@ const ReactionButtons: React.FC<Props> = ({ targetId, targetType }) => {
   ).length;
 
   return (
-    <div className="reaction-buttons">
+    <>
       <button
         className={`btn ${userReaction?.type === ReactionType.Like ? 'active' : ''}`}
         onClick={() => handleReact(ReactionType.Like)}
       >
-        👍 Like ({likesCount})
+        <IoThumbsUpOutline /> Like ({likesCount})
       </button>
       <button
         className={`btn ${userReaction?.type === ReactionType.Dislike ? 'active' : ''}`}
         onClick={() => handleReact(ReactionType.Dislike)}
       >
-        👎 Dislike ({dislikesCount})
+        <IoThumbsDownOutline /> Dislike ({dislikesCount})
       </button>
-    </div>
+    </>
   );
 };
 

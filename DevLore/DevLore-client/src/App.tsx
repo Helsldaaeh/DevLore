@@ -12,7 +12,7 @@ import Settings from './pages/Settings';
 import SearchPage from './pages/Search';
 import CreatePost from './pages/CreatePost';
 import EditPost from './pages/EditPost';
-import PostDetail from './pages/PostDetail'; // новая страница для отдельного поста
+import PostDetail from './pages/PostDetail';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = useSelector((state: RootState) => state.auth.token);
@@ -23,6 +23,16 @@ function App() {
   const dispatch = useDispatch<AppDispatch>();
   const token = useSelector((state: RootState) => state.auth.token);
   const user = useSelector((state: RootState) => state.auth.user);
+
+  // Применение темы при старте
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark-theme');
+    } else {
+      document.documentElement.classList.remove('dark-theme');
+    }
+  }, []);
 
   useEffect(() => {
     if (token && !user) {

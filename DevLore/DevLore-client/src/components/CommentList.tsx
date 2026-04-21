@@ -23,7 +23,6 @@ const CommentList: React.FC<Props> = ({ postId }) => {
   if (loading) return <div>Loading comments...</div>;
   if (!currentUser) return null;
 
-  // Группируем комментарии: корневые (parentCommentId === null) и ответы
   const topLevelComments = items.filter(c => c.postId === postId && !c.parentCommentId);
   const repliesMap = new Map<number, CommentType[]>();
   items.forEach(c => {
