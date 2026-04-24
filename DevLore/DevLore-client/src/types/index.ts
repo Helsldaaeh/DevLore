@@ -34,9 +34,10 @@ export interface Post {
   originalPostId?: number | null;
   originalPost?: Post;
   tags?: string[];
-  media?: string[];           // массив URL прикреплённых файлов
   createdAt?: string;
   updatedAt?: string;
+  isRepost?: boolean;              // добавлено
+  isOriginalDeleted?: boolean;    // уже есть
 }
 
 export interface Comment {
@@ -115,7 +116,7 @@ export interface RequestUser {
 export interface Comment {
   id?: number;
   userId: number;
-  username: string;            // добавлено
+  username: string;
   postId: number;
   parentCommentId?: number | null;
   content: string;

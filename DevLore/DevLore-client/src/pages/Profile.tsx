@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../store/usersSlice';
 import { fetchPosts } from '../store/postsSlice';
+import { fetchComments } from '../store/commentsSlice';
 import type { RootState, AppDispatch } from '../store/store';
 import Post from '../components/Post';
 import { logout } from '../store/authSlice';
-import { IoHomeOutline, IoPersonOutline, IoCreateOutline, IoSettingsOutline, IoSearchOutline, IoLogOutOutline } from 'react-icons/io5';
 
 const Profile: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -21,6 +21,18 @@ const Profile: React.FC = () => {
 
   const [visiblePosts, setVisiblePosts] = useState(10);
 
+  // Вычисляем количество репостов для каждого поста
+  const repostsCountMap = useMemo(() => {
+    const map = new Map<number, number>();
+    allPosts.forEach(p => {
+      if (p.originalPostId) {
+        const originalId = p.originalPostId;
+        map.set(originalId, (map.get(originalId) || 0) + 1);
+      }
+    });
+    return map;
+  }, [allPosts]);
+
   useEffect(() => {
     if (userId && userId !== 'me') {
       dispatch(fetchUsers([Number(userId)]));
@@ -28,6 +40,7 @@ const Profile: React.FC = () => {
       dispatch(fetchUsers([currentUser.id]));
     }
     dispatch(fetchPosts());
+    dispatch(fetchComments());
   }, [dispatch, userId, currentUser]);
 
   const userPosts = allPosts.filter((p) => p.userId === (user?.id || currentUser?.id)).slice(0, visiblePosts);
@@ -47,12 +60,11 @@ const Profile: React.FC = () => {
   return (
     <div className="container">
       <nav className="navbar">
-        <button onClick={() => navigate('/feed')}><IoHomeOutline /> Home</button>
-        <button onClick={() => navigate('/profile/me')}><IoPersonOutline /> My Profile</button>
-        <button onClick={() => navigate('/create-post')}><IoCreateOutline /> Create Post</button>
-        <button onClick={() => navigate('/settings')}><IoSettingsOutline /> Settings</button>
-        <button onClick={() => navigate('/search')}><IoSearchOutline /> Search</button>
-        <button onClick={handleLogout}><IoLogOutOutline /> Logout</button>
+        <button onClick={() => navigate('/feed')}>🏠 Home</button>
+        <button onClick={() => navigate('/create-post')}>✏️ Create Post</button>
+        <button onClick={() => navigate('/settings')}>⚙️ Settings</button>
+        <button onClick={() => navigate('/search')}>🔍 Search</button>
+        <button onClick={handleLogout}>🚪 Logout</button>
       </nav>
 
       <div className="card profile-header">
@@ -64,7 +76,12 @@ const Profile: React.FC = () => {
       <h2>Posts</h2>
       {userPosts.length === 0 && <p>No posts yet.</p>}
       {userPosts.map((post) => (
-        <Post key={post.id} post={post} currentUserId={currentUser?.id} />
+        <Post
+          key={post.id}
+          post={post}
+          currentUserId={currentUser?.id}
+          repostsCount={repostsCountMap.get(post.id!) || 0}
+        />
       ))}
       {hasMore && (
         <button className="btn btn-primary" onClick={loadMore}>

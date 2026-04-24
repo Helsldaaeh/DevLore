@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import type { Comment as CommentType } from '../types';
 import ReactionButtons from './ReactionButtons';
 import CommentForm from './CommentForm';
 import { updateComment } from '../store/commentsSlice';
 import { IoTrashOutline, IoChatbubbleOutline, IoCreateOutline } from 'react-icons/io5';
-import type { AppDispatch } from '../store/store';
+import type { AppDispatch, RootState } from '../store/store';
 
 interface Props {
   comment: CommentType;
@@ -23,12 +23,15 @@ const Comment: React.FC<Props> = ({ comment, onDelete, currentUserId, postId }) 
   const [editContent, setEditContent] = useState(comment.content);
   const isOwner = currentUserId === comment.userId;
 
+  const allComments = useSelector((state: RootState) => state.comments.items);
+  const repliesCount = allComments.filter(c => c.parentCommentId === comment.id).length;
+
   const goToProfile = () => navigate(`/profile/${comment.userId}`);
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editContent.trim()) return;
-    dispatch(updateComment({
+    await dispatch(updateComment({
       id: comment.id,
       userId: comment.userId,
       postId: comment.postId,
@@ -45,11 +48,12 @@ const Comment: React.FC<Props> = ({ comment, onDelete, currentUserId, postId }) 
           <strong>{comment.username || `User ${comment.userId}`}</strong>
         </button>
         <div className="comment-meta">
-          <small>{new Date(comment.createdAt!).toLocaleString()}</small>
-          {comment.updatedAt && comment.updatedAt !== comment.createdAt && (
-            <small className="edited">(edited)</small>
-          )}
-        </div>
+  <small>{new Date(comment.createdAt!).toLocaleString()}</small>
+  {comment.updatedAt && comment.updatedAt !== comment.createdAt && (
+    <small className="edited">(edited)</small>
+  )}
+  {repliesCount > 0 && <small className="replies-count">💬 {repliesCount}</small>}
+</div>
         {isOwner && (
           <div className="comment-actions-buttons">
             <button className="btn" onClick={() => setIsEditing(true)}>

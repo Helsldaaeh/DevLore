@@ -10,5 +10,6 @@ namespace DevLore.EntitiesLibrary.Transfer.PostTransferLogic
         public PostType Type { get; set; }
         public int? OriginalPostId { get; set; }
         public List<string>? Tags { get; set; }
+        public bool IsRepost { get; set; }   // добавлено
     }
 }

@@ -46,6 +46,7 @@ const EditPost: React.FC = () => {
       id: post.id,
       userId: post.userId,
       content,
+      originalPostId: post.originalPostId,
       type: post.type,
       tags: tags.split(',').map(t => t.trim()).filter(Boolean),
     })).then(() => navigate('/feed'));

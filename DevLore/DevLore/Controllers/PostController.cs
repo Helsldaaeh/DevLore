@@ -135,12 +135,16 @@ namespace DevLore.Controllers
         public async Task<IActionResult> Update(int id, RequestPostDTO dto)
         {
             var context = (DataContext)DataEntityService.DataContext;
-            var post = await context.Posts.Include(p => p.Tags).FirstOrDefaultAsync(p => p.Id == id);
+            var post = await context.Posts
+                .Include(p => p.Tags)
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (post == null) return NotFound();
 
             post.Content = dto.Content;
             post.Type = dto.Type;
-            post.OriginalPostId = dto.OriginalPostId;
+            if (dto.OriginalPostId.HasValue)
+                post.OriginalPostId = dto.OriginalPostId;
 
             if (dto.Tags != null)
             {
@@ -159,18 +163,37 @@ namespace DevLore.Controllers
             }
 
             await context.SaveChangesAsync();
-            return Ok(post.ToDTO());
+
+            var updatedPost = await context.Posts
+                .Include(p => p.User)
+                .Include(p => p.Tags)
+                .Include(p => p.OriginalPost)
+                    .ThenInclude(op => op.User)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            return Ok(updatedPost.ToDTO());
         }
 
         [HttpDelete]
         public async Task<IActionResult> Delete([FromBody] List<int> ids)
         {
+            if (ids == null || ids.Count == 0)
+                return BadRequest("No ids provided");
+
             var context = (DataContext)DataEntityService.DataContext;
-            var postsToDelete = await context.Posts.Where(p => ids.Contains(p.Id.GetValueOrDefault())).ToListAsync();
+            var postsToDelete = await context.Posts
+                .Where(p => ids.Contains(p.Id.GetValueOrDefault()))
+                .ToListAsync();
+
+            if (postsToDelete.Count == 0)
+                return NotFound("No posts found with given ids");
+
             context.Posts.RemoveRange(postsToDelete);
-            var status = await context.SaveChangesAsync() > 0;
-            if (!status) return BadRequest("No posts were deleted!");
-            return Ok();
+            var deletedCount = await context.SaveChangesAsync();
+
+            if (deletedCount > 0)
+                return Ok();
+            else
+                return BadRequest("Failed to delete posts");
         }
     }
 }

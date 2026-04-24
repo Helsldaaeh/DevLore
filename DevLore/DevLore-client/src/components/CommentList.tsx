@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchComments, deleteComment } from '../store/commentsSlice';
-import type { RootState } from '../store/store';
+import type { RootState, AppDispatch } from '../store/store';
 import Comment from './Comment';
 import CommentForm from './CommentForm';
-import type { AppDispatch } from '../store/store';
 import type { Comment as CommentType } from '../types';
 
 interface Props {
@@ -32,20 +31,24 @@ const CommentList: React.FC<Props> = ({ postId }) => {
     }
   });
 
-  const renderCommentWithReplies = (comment: CommentType, level = 0) => (
-    <div key={comment.id} style={{ marginLeft: level * 20 }}>
-      <Comment
-        comment={comment}
-        onDelete={(id) => dispatch(deleteComment([id]))}
-        currentUserId={currentUser.id}
-        postId={postId}
-      />
-      {repliesMap.get(comment.id!)?.map(reply => renderCommentWithReplies(reply, level + 1))}
-    </div>
-  );
+  const MAX_MARGIN = 60; // Максимальный отступ, чтобы не сжимать комментарии
+  const renderCommentWithReplies = (comment: CommentType, level = 0) => {
+    const marginLeft = Math.min(level * 20, MAX_MARGIN);
+    return (
+      <div key={comment.id} style={{ marginLeft: `${marginLeft}px`, minWidth: 0 }}>
+        <Comment
+          comment={comment}
+          onDelete={(id) => dispatch(deleteComment([id]))}
+          currentUserId={currentUser.id}
+          postId={postId}
+        />
+        {repliesMap.get(comment.id!)?.map(reply => renderCommentWithReplies(reply, level + 1))}
+      </div>
+    );
+  };
 
   return (
-    <div style={{ marginTop: '16px' }}>
+    <div style={{ marginTop: '16px', overflowX: 'hidden' }}>
       <CommentForm postId={postId} userId={currentUser.id} />
       {topLevelComments.map(comment => renderCommentWithReplies(comment))}
     </div>

@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchPosts, deletePost } from '../store/postsSlice';
+import { fetchComments } from '../store/commentsSlice';
 import { logout } from '../store/authSlice';
 import type { RootState, AppDispatch } from '../store/store';
 import Post from '../components/Post';
-import { IoHomeOutline, IoPersonOutline, IoCreateOutline, IoSettingsOutline, IoSearchOutline, IoLogOutOutline } from 'react-icons/io5';
 
 const Feed: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,6 +20,18 @@ const Feed: React.FC = () => {
     return saved === 'true';
   });
 
+  // Вычисляем количество репостов для каждого поста
+  const repostsCountMap = useMemo(() => {
+    const map = new Map<number, number>();
+    posts.forEach(post => {
+      if (post.originalPostId) {
+        const originalId = post.originalPostId;
+        map.set(originalId, (map.get(originalId) || 0) + 1);
+      }
+    });
+    return map;
+  }, [posts]);
+
   useEffect(() => {
     const handleStorageChange = () => {
       const saved = localStorage.getItem('autoPaginate');
@@ -32,6 +44,7 @@ const Feed: React.FC = () => {
   useEffect(() => {
     if (token) {
       dispatch(fetchPosts());
+      dispatch(fetchComments());
     }
   }, [dispatch, token]);
 
@@ -72,12 +85,11 @@ const Feed: React.FC = () => {
   return (
     <div className="container">
       <nav className="navbar">
-        <button onClick={() => navigate('/feed')}><IoHomeOutline /> Home</button>
-        <button onClick={() => navigate('/profile/' + user.id)}><IoPersonOutline /> Profile</button>
-        <button onClick={() => navigate('/create-post')}><IoCreateOutline /> Create Post</button>
-        <button onClick={() => navigate('/settings')}><IoSettingsOutline /> Settings</button>
-        <button onClick={() => navigate('/search')}><IoSearchOutline /> Search</button>
-        <button onClick={handleLogout}><IoLogOutOutline /> Logout</button>
+        <button onClick={() => navigate('/profile/' + user.id)}>👤 Profile</button>
+        <button onClick={() => navigate('/create-post')}>✏️ Create Post</button>
+        <button onClick={() => navigate('/settings')}>⚙️ Settings</button>
+        <button onClick={() => navigate('/search')}>🔍 Search</button>
+        <button onClick={handleLogout}>🚪 Logout</button>
       </nav>
 
       <h1>Feed</h1>
@@ -85,7 +97,13 @@ const Feed: React.FC = () => {
       {loading && <p>Loading posts...</p>}
       {!loading && posts.length === 0 && <p>No posts yet. Be the first to create one!</p>}
       {displayedPosts.map((post) => (
-        <Post key={post.id} post={post} onDelete={handleDelete} currentUserId={user.id} />
+        <Post
+          key={post.id}
+          post={post}
+          onDelete={handleDelete}
+          currentUserId={user.id}
+          repostsCount={repostsCountMap.get(post.id!) || 0}
+        />
       ))}
       {hasMore && !autoLoad && !loading && (
         <button className="btn btn-primary" onClick={loadMore}>

@@ -10,7 +10,8 @@ namespace DevLore.EntitiesLibrary.Transfer.PostTransferLogic
             UserId = dto.UserId,
             Content = dto.Content,
             Type = dto.Type,
-            OriginalPostId = dto.OriginalPostId
+            OriginalPostId = dto.OriginalPostId,
+            IsRepost = dto.OriginalPostId.HasValue || dto.IsRepost   // если есть OriginalPostId или явно указан IsRepost
         };
 
         public static PostDTO ToDTO(this Post entity) => new()
@@ -23,8 +24,10 @@ namespace DevLore.EntitiesLibrary.Transfer.PostTransferLogic
             Content = entity.Content,
             Type = entity.Type,
             OriginalPostId = entity.OriginalPostId,
-            OriginalPost = entity.OriginalPost?.ToDTO(),   // рекурсивное преобразование
-            Tags = entity.Tags?.Select(t => t.Name).ToList()
+            OriginalPost = entity.OriginalPost?.ToDTO(),
+            Tags = entity.Tags?.Select(t => t.Name).ToList(),
+            IsRepost = entity.IsRepost,     // заполняем
+            IsOriginalDeleted = entity.IsRepost && entity.OriginalPost == null   // репост, но оригинала нет
         };
     }
 }

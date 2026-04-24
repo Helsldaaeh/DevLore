@@ -25,6 +25,8 @@ namespace DevLore.EntitiesLibrary.Entities.Common
                 builder.Property(p => p.Type)
                     .HasDefaultValue(PostType.Text)
                     .IsRequired();
+                builder.Property(p => p.IsRepost)
+                    .HasDefaultValue(false);
 
                 builder.HasOne(p => p.User)
                     .WithMany(u => u.Posts)
@@ -34,7 +36,7 @@ namespace DevLore.EntitiesLibrary.Entities.Common
                 builder.HasOne(p => p.OriginalPost)
                     .WithMany()
                     .HasForeignKey(p => p.OriginalPostId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.SetNull);
 
                 builder.HasMany(p => p.Tags)
                     .WithMany(t => t.Posts)
@@ -54,6 +56,7 @@ namespace DevLore.EntitiesLibrary.Entities.Common
         public PostType Type { get; set; } = PostType.Text;
         public int? OriginalPostId { get; set; }
         public Post? OriginalPost { get; set; }
+        public bool IsRepost { get; set; } = false;   // новое поле
         public List<Comment>? Comments { get; set; }
         public List<Reaction>? Reactions { get; set; }
         public List<Tag>? Tags { get; set; }
