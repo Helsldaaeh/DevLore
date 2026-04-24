@@ -20,13 +20,7 @@ const Settings: React.FC = () => {
 
   const [isDarkTheme, setIsDarkTheme] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark-theme');
-      return true;
-    } else {
-      document.documentElement.classList.remove('dark-theme');
-      return false;
-    }
+    return savedTheme === 'dark';
   });
 
   useEffect(() => {

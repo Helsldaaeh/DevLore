@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { updatePost, fetchPosts } from '../store/postsSlice';
 import type { AppDispatch, RootState } from '../store/store';
 import { logout } from '../store/authSlice';
-import { IoHomeOutline, IoPersonOutline, IoSettingsOutline, IoSearchOutline, IoLogOutOutline } from 'react-icons/io5';
+import { IoHomeOutline, IoPersonOutline, IoCreateOutline, IoSettingsOutline, IoSearchOutline, IoLogOutOutline } from 'react-icons/io5';
 
 const EditPost: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -46,8 +46,8 @@ const EditPost: React.FC = () => {
       id: post.id,
       userId: post.userId,
       content,
-      originalPostId: post.originalPostId,
       type: post.type,
+      originalPostId: post.originalPostId,
       tags: tags.split(',').map(t => t.trim()).filter(Boolean),
     })).then(() => navigate('/feed'));
   };
@@ -65,6 +65,7 @@ const EditPost: React.FC = () => {
       <nav className="navbar">
         <button onClick={() => navigate('/feed')}><IoHomeOutline /> Home</button>
         <button onClick={() => navigate('/profile/' + user?.id)}><IoPersonOutline /> Profile</button>
+        <button onClick={() => navigate('/create-post')}><IoCreateOutline /> Create Post</button>
         <button onClick={() => navigate('/settings')}><IoSettingsOutline /> Settings</button>
         <button onClick={() => navigate('/search')}><IoSearchOutline /> Search</button>
         <button onClick={handleLogout}><IoLogOutOutline /> Logout</button>
@@ -91,7 +92,7 @@ const EditPost: React.FC = () => {
           />
         </div>
         <div className="form-actions">
-          <button type="submit" className="btn btn-primary">Update</button>
+          <button type="submit" className="btn btn-primary"><IoCreateOutline /> Update</button>
           <button type="button" className="btn" onClick={() => navigate('/feed')}>Cancel</button>
         </div>
       </form>

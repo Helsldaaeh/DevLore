@@ -13,6 +13,7 @@ import SearchPage from './pages/Search';
 import CreatePost from './pages/CreatePost';
 import EditPost from './pages/EditPost';
 import PostDetail from './pages/PostDetail';
+import Admin from './pages/Admin'; // импорт админки
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = useSelector((state: RootState) => state.auth.token);
@@ -24,7 +25,6 @@ function App() {
   const token = useSelector((state: RootState) => state.auth.token);
   const user = useSelector((state: RootState) => state.auth.user);
 
-  // Применение темы при старте
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
@@ -99,6 +99,14 @@ function App() {
           element={
             <PrivateRoute>
               <PostDetail />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute>
+              <Admin />
             </PrivateRoute>
           }
         />

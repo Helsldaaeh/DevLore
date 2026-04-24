@@ -5,7 +5,7 @@ import type { Comment as CommentType } from '../types';
 import ReactionButtons from './ReactionButtons';
 import CommentForm from './CommentForm';
 import { updateComment } from '../store/commentsSlice';
-import { IoTrashOutline, IoChatbubbleOutline, IoCreateOutline } from 'react-icons/io5';
+import { IoTrashOutline, IoChatbubbleOutline } from 'react-icons/io5';
 import type { AppDispatch, RootState } from '../store/store';
 
 interface Props {
@@ -56,9 +56,6 @@ const Comment: React.FC<Props> = ({ comment, onDelete, currentUserId, postId }) 
 </div>
         {isOwner && (
           <div className="comment-actions-buttons">
-            <button className="btn" onClick={() => setIsEditing(true)}>
-              <IoCreateOutline /> Edit
-            </button>
             <button className="btn btn-danger" onClick={() => onDelete?.(comment.id!)}>
               <IoTrashOutline /> Delete
             </button>

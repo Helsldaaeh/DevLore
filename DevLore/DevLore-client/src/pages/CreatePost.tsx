@@ -5,7 +5,7 @@ import { addPost } from '../store/postsSlice';
 import type { AppDispatch, RootState } from '../store/store';
 import { PostType } from '../types';
 import { logout } from '../store/authSlice';
-import { IoHomeOutline, IoPersonOutline, IoSettingsOutline, IoSearchOutline, IoLogOutOutline } from 'react-icons/io5';
+import { IoHomeOutline, IoPersonOutline, IoCreateOutline, IoSettingsOutline, IoSearchOutline, IoLogOutOutline } from 'react-icons/io5';
 
 const CreatePost: React.FC = () => {
   const [content, setContent] = useState('');
@@ -67,7 +67,7 @@ const CreatePost: React.FC = () => {
           />
         </div>
         <div className="form-actions">
-          <button type="submit" className="btn btn-primary">Publish</button>
+          <button type="submit" className="btn btn-primary"><IoCreateOutline /> Publish</button>
         </div>
       </form>
     </div>

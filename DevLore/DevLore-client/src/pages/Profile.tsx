@@ -7,6 +7,7 @@ import { fetchComments } from '../store/commentsSlice';
 import type { RootState, AppDispatch } from '../store/store';
 import Post from '../components/Post';
 import { logout } from '../store/authSlice';
+import { IoHomeOutline, IoCreateOutline, IoSettingsOutline, IoSearchOutline, IoLogOutOutline, IoShieldOutline } from 'react-icons/io5';
 
 const Profile: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -21,7 +22,6 @@ const Profile: React.FC = () => {
 
   const [visiblePosts, setVisiblePosts] = useState(10);
 
-  // Вычисляем количество репостов для каждого поста
   const repostsCountMap = useMemo(() => {
     const map = new Map<number, number>();
     allPosts.forEach(p => {
@@ -60,11 +60,14 @@ const Profile: React.FC = () => {
   return (
     <div className="container">
       <nav className="navbar">
-        <button onClick={() => navigate('/feed')}>🏠 Home</button>
-        <button onClick={() => navigate('/create-post')}>✏️ Create Post</button>
-        <button onClick={() => navigate('/settings')}>⚙️ Settings</button>
-        <button onClick={() => navigate('/search')}>🔍 Search</button>
-        <button onClick={handleLogout}>🚪 Logout</button>
+        <button onClick={() => navigate('/feed')}><IoHomeOutline /> Home</button>
+        <button onClick={() => navigate('/create-post')}><IoCreateOutline /> Create Post</button>
+        <button onClick={() => navigate('/settings')}><IoSettingsOutline /> Settings</button>
+        <button onClick={() => navigate('/search')}><IoSearchOutline /> Search</button>
+        {currentUser?.roleName === 'Admin' && (
+          <button onClick={() => navigate('/admin')}><IoShieldOutline />  Admin</button>
+        )}
+        <button onClick={handleLogout}><IoLogOutOutline /> Logout</button>
       </nav>
 
       <div className="card profile-header">

@@ -60,7 +60,7 @@ namespace DevLore.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Follow", b =>
@@ -95,7 +95,7 @@ namespace DevLore.Migrations
                     b.HasIndex("UserId", "FollowedUserId")
                         .IsUnique();
 
-                    b.ToTable("Follows");
+                    b.ToTable("Follows", (string)null);
                 });
 
             modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Post", b =>
@@ -141,7 +141,7 @@ namespace DevLore.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Reaction", b =>
@@ -185,7 +185,7 @@ namespace DevLore.Migrations
                     b.HasIndex("UserId", "PostId", "CommentId")
                         .IsUnique();
 
-                    b.ToTable("Reactions");
+                    b.ToTable("Reactions", (string)null);
                 });
 
             modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Role", b =>
@@ -208,7 +208,7 @@ namespace DevLore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.Tag", b =>
@@ -237,7 +237,7 @@ namespace DevLore.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", (string)null);
                 });
 
             modelBuilder.Entity("DevLore.EntitiesLibrary.Entities.Common.User", b =>
@@ -289,7 +289,7 @@ namespace DevLore.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("PostTag", b =>
